@@ -1,42 +1,54 @@
-# cluster specific values
 cluster:
-  # specify cluster name
-  name: template-rke2
+  name: testtemplate
 
-  # specify cluster labels
-  labels: {}
+cloudprovider: openstack
 
-  # specify cluster annotations
-  annotations: {}
+cloudCredentialSecretName: ocp2
 
-# specify cloud credential secret name, do not need to be provided if using custom driver
-cloudCredentialSecretName: ""
-
-# specify cloud provider, options are amazonec2, digitalocean, azure, vsphere or custom
-cloudprovider: "digitalocean"
-
-kubernetesVersion: ""
-
-# general RKE options
-rke:
-  # enable local auth endpoint
-  localClusterAuthEndpoint:
-    enabled: false
-  # specify fqdn of local access endpoint
-  # fqdn: foo.bar.example
-  # specify cacert of local access endpoint
-  # caCerts: ""
-
-# specify user principal ids to be assiged as cluster members
-# clusterMembers:
-# - principalName: "local://u-z8zl5"
-#   roleTemplateName: "cluster-member"
-
-# enable monitoring
-monitoring:
-  enabled: false
-  # specify which version to install, can be semver range. If version is empty or is semver range, it will pick up the latest version.
-  # version: ""
-  # specify cutsom values set
-  # values:
-  #   foo: bar
+nodepools:
+  - etcd: true
+    controlplane: true
+    worker: true
+    labels: {}
+    quantity: 1
+    name: nodepool-1
+    authUrl: "http://10.100.1.22:5000"
+    domainName: Default
+    flavorName: whiteidam
+    imageName: "Ubuntu 20.04 LTS"
+    keypairName: rancher
+    netName: PUBLIC
+    privateKeyFile: |
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEowIBAAKCAQEAtOVfJoqva7fWMI3FjeJl4eYsNvobcV83RNN3M7AfAa0TcgmM
+      ncK+07ane8VCRHf8UgLUOfVxW8nCZFLnVYv9GYKYOfgD5NssxO7gR4YSRSj50ysw
+      jfSP1rmhQbHPonpUMm+nwNayN9/frl1Znr/V46keLVvIA7PTONM7DPjfWdlRLPD3
+      Wk+8ewm2j7drFc+cB5UThlBMxqcWuGlmPEBNByGkXU49IepiuTYVHOGeG0Ir5w3A
+      VwCMvWLGloo8sAF9+8GZoocTeLoRDj/GQNwEAioM1sVe1svSQBfTmkbRqyMJHVN1
+      EJUiCk6E34DvFXD9OWWLR6pwsNB70hz7XsBZkQIDAQABAoIBACsQmBBi39QzFcjF
+      V4ypozueQlRsQnBBDLVT6oLhoOATRhfV8iX0oN1iFIlAsr/+GJGlnsSVjAEgDSk5
+      G12gUAbssjTKuJKZIxVXEQm1/097q8378Dk7SasC0kMDg7zYhobjUfp0okTvBR9L
+      lfRXEyJ5tndx7DIFc3mJv/scnH+U+ByI0/UVu8AzL2Z67dgJ6KL3HaaK33Y/9qt3
+      A1HRdycWG65kd8OTZVtXXwWJgFe2F2I4yCcDESo3hQLmjfkdhGtY8mNeCj4638Sw
+      cKWo2vcWNdd8t/ipzaTSxXtzfVJ4FeCMqFV4Ij0i4H1r40dkOBRDx/Kkx2NcYjHO
+      KF6LEAkCgYEA6F9JFifE/Z9AKvZ3zkhCJeQofIbFGoKBUyUIRB45zYp1PfpbIX44
+      MpDM8PvgkjD442fowU/pECBm9mW5/r4mJKD0xaoqsXIST+8Mw4SEqAuQIixTaJyc
+      kqS0LYnzKQvEbInLjmhuizL+uPItf6Eu/APnHlEjCR1wpubKK2vgDT8CgYEAx0ol
+      OtpeoHBdOalr6MG+Jlj8BRHYvb/5DZX6JJCbZwehOtTBD38nCBwgHm/R/Wxc7BSv
+      il5+j1SL/OmTjN+WJaeiK9By/+8CXDgJrEvBtOV8EkexE5NAcG1oI7a46sfoTZwe
+      tdL35Xscxft/Ec7nmr+etqDunIGPD8ngvW3IVS8CgYAuRVsOWFj3j9B9PZrZrrXN
+      ScNuGIADKV2LKuKcfdBQx3NVJhcjcjjKiN7mVaGAOtQ0pCpK5Biqp2kZQ2Rn/4Ek
+      5hAXlCzwLKDM3fMSs76en77RrzXkrNrYsIdYUhHjaH5yhnXMI6tveHYUadT5hyUN
+      9dD9znZFiGE4OtijENYKjQKBgCDEuEptDZIj57BLg0rKUJHNn+LVhGXu4uyw9Gh+
+      vo66WnBp+zSpG6nhtgZLLKQW5VCMNjDySK0Yocv8PB61xOJ8JdY+eCpNCn5PWIfU
+      DQ3JjhUTZLJrS/UwiCcXLGCubiwUt5f+EHTTQW/sYoBzHPH9AAPXgmSJiRR3hVSg
+      cIhRAoGBAJtEumIziuOPJZ4FtzyvuMzazmJWJU3eSbhAb5IlZYtiLd7cD0mCtaT7
+      DaBhT6QnS+NvSnVMavWuO+vuSw+oD+UDgcn5/sPA99CXtHNivsfzlgLr0CsclAhy
+      +ZUmGY020dMPTqFYcG2uqUjCQ0ZZNKqyGfxyn4B640dQb9NLSZPm
+      -----END RSA PRIVATE KEY-----
+    region: RegionOne
+    secGroups: all-access
+    sshPort: 22
+    sshUser: ubuntu
+    tenantName: gcuba
+    username: gcuba
