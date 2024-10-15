@@ -170,7 +170,6 @@ spec:
       {{- toYaml .Values.cluster.config.globalConfig.etcd | nindent 8 }}
     {{- end }}
     # machinePoolDefaults:
-    {{- if ne .Values.cloudprovider "custom" }}
     machinePools:
     {{- if .Values.nodepools }} {{ range $index, $nodepool := .Values.nodepools }}
     - name: {{ $nodepool.name }}
