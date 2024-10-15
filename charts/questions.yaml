@@ -6,10 +6,10 @@ questions:
   required: true
   type: string
   group: "General"
-- variable: cloudCredentialSecretName
+- variable: cloudCredentialId
   default:
-  description: "CloudCredentialName for provisioning cluster"
-  label: "CloudCredential Name"
+  description: "CloudCredentialId for provisioning cluster"
+  label: "CloudCredentialId Name"
   type: cloudcredential
   group: "General"
 - variable: cloudprovider
