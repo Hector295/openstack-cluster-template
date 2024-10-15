@@ -37,7 +37,7 @@ imageId: {{ default "" $nodepool.imageId }}
 imageName: {{ $nodepool.imageName | quote }}
 {{- end }}
 insecure: {{ default "false" $nodepool.insecure }}
-ipVersion: {{ default "4" $nodepool.ipVersion }}
+ipVersion: "{{ default "4" $nodepool.ipVersion }}"
 keypairName: {{ $nodepool.keypairName }}
 netId: {{ default "" $nodepool.netId }}
 {{- if $nodepool.netName }}
