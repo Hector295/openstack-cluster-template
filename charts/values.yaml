@@ -1,5 +1,112 @@
 cluster:
-  name: testtemplate
+  name: cluster-rke2
+  # annotations:
+  # key: value
+  # labels:
+  # key: value
+  config:
+    kubernetesVersion: v1.29.8+rke2r1 # https://github.com/rancher/rke2/releases
+    enableNetworkPolicy: false
+    localClusterAuthEndpoint:
+      enabled: false
+    # additionalManifests: |-
+    #   apiVersion: v1
+    #   kind: Pod
+    #   metadata:
+    #     name: example-manifest
+    #   spec:
+    #     containers:
+    #     - name: example
+    #       image: example:1.0.0
+    #       ports:
+    #       - containerPort: 80
+    # agentEnvVars:
+    # - name: ""
+    #   value: ""
+    chartValues:
+      rke2-calico: {}
+    # defaultClusterRoleForProjectMembers: ''
+    # defaultPodSecurityAdmissionConfigurationTemplateName: ''
+    # defaultPodSecurityPolicyTemplateName: ''
+    globalConfig:
+      systemDefaultRegistry: docker.io # default registry
+      cni: calico # canal, calico, cilium, multus,canal, multus,calico, multus,cilium
+        # token: ''
+        # tls-san:
+        # - url
+        # - ip
+        # disable:
+        # - rke2-coredns
+      # - rke2-ingress-nginx
+      # - rke2-metrics-server
+      disable_scheduler: false
+      disable_cloud_controller: false
+      disable_kube_proxy: false
+      etcd_expose_metrics: false
+      profile: '' # cis-1.6, cis-1.23
+      etcd:
+        disableSnapshots: true
+        snapshotRetention: 5
+        snapshotScheduleCron: 0 */5 * * *
+      selinux: false
+      secrets_encryption: false
+      write_kubeconfig_mode: 0600
+      use_service_account_credentials: false
+      protect_kernel_defaults: false
+      cloud_provider_name: '' # https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/kubernetes-clusters-in-rancher-setup/set-up-cloud-providers
+      # cloud_provider_config: '' # cloud provider config secret here (example: secret://fleet-default:cloudprovider)
+      # kube_controller_manager_arg:
+      # - kube controller manager arguments here (https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager)
+      # kube_scheduler_arg:
+      # - kube scheduler arguments here (https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler)
+      # kube_apiserver_arg:
+      # - kube apiserver arguments here (https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver)
+      # kube_proxy_arg:
+      # - kube proxy arguments here (https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy)
+      # kubelet_arg:
+      # - kubelet arguments here (https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet)
+      # controlPlaneConfig:
+      # same options as globalConfig
+      # only will apply to the control plane nodes
+      # workerConfig:
+      # same options as globalConfig
+      # only will apply to the worker nodes
+    registries:
+      enabled: false
+        # configs:
+        # - name: registry.example.com
+        # authConfigSecretName: registry-creds
+        # caBundle: ''
+        # insecureSkipVerify: false
+        # tlsSecretName: ''
+        # mirrors:
+        # - name: docker.io
+        # endpoints: ['registry.example.com']
+      # rewrite:
+      # "^rancher/(.*)": "mirrorproject/rancher-images/$1"
+    upgradeStrategy:
+      controlPlaneConcurrency: 10%
+      controlPlaneDrainOptions:
+        enabled: false
+        # deleteEmptyDirData: true
+        # disableEviction: false
+        # force: false
+        # gracePeriod: -1
+        # ignoreDaemonSets: true
+        # ignoreErrors: false
+        # skipWaitForDeleteTimeoutSeconds: 0
+        # timeout: 120
+      workerConcurrency: 10%
+      workerDrainOptions:
+        enabled: false
+        # deleteEmptyDirData: true
+        # disableEviction: false
+        # force: false
+        # gracePeriod: -1
+        # ignoreDaemonSets: true
+        # ignoreErrors: false
+        # skipWaitForDeleteTimeoutSeconds: 0
+        # timeout: 120
 
 cloudprovider: openstack
 
@@ -14,41 +121,70 @@ nodepools:
     name: nodepool-1
     authUrl: "http://10.100.1.22:5000"
     domainName: Default
-    flavorName: whiteidam
-    imageName: "Ubuntu 20.04 LTS"
-    keypairName: rancher
+    flavorName: m1.large
+    imageName: "Ubuntu 22.04 LTS"
+    keypairName: whitecruiser
     netName: PUBLIC
     privateKeyFile: |
-      -----BEGIN RSA PRIVATE KEY-----
-      MIIEowIBAAKCAQEAtOVfJoqva7fWMI3FjeJl4eYsNvobcV83RNN3M7AfAa0TcgmM
-      ncK+07ane8VCRHf8UgLUOfVxW8nCZFLnVYv9GYKYOfgD5NssxO7gR4YSRSj50ysw
-      jfSP1rmhQbHPonpUMm+nwNayN9/frl1Znr/V46keLVvIA7PTONM7DPjfWdlRLPD3
-      Wk+8ewm2j7drFc+cB5UThlBMxqcWuGlmPEBNByGkXU49IepiuTYVHOGeG0Ir5w3A
-      VwCMvWLGloo8sAF9+8GZoocTeLoRDj/GQNwEAioM1sVe1svSQBfTmkbRqyMJHVN1
-      EJUiCk6E34DvFXD9OWWLR6pwsNB70hz7XsBZkQIDAQABAoIBACsQmBBi39QzFcjF
-      V4ypozueQlRsQnBBDLVT6oLhoOATRhfV8iX0oN1iFIlAsr/+GJGlnsSVjAEgDSk5
-      G12gUAbssjTKuJKZIxVXEQm1/097q8378Dk7SasC0kMDg7zYhobjUfp0okTvBR9L
-      lfRXEyJ5tndx7DIFc3mJv/scnH+U+ByI0/UVu8AzL2Z67dgJ6KL3HaaK33Y/9qt3
-      A1HRdycWG65kd8OTZVtXXwWJgFe2F2I4yCcDESo3hQLmjfkdhGtY8mNeCj4638Sw
-      cKWo2vcWNdd8t/ipzaTSxXtzfVJ4FeCMqFV4Ij0i4H1r40dkOBRDx/Kkx2NcYjHO
-      KF6LEAkCgYEA6F9JFifE/Z9AKvZ3zkhCJeQofIbFGoKBUyUIRB45zYp1PfpbIX44
-      MpDM8PvgkjD442fowU/pECBm9mW5/r4mJKD0xaoqsXIST+8Mw4SEqAuQIixTaJyc
-      kqS0LYnzKQvEbInLjmhuizL+uPItf6Eu/APnHlEjCR1wpubKK2vgDT8CgYEAx0ol
-      OtpeoHBdOalr6MG+Jlj8BRHYvb/5DZX6JJCbZwehOtTBD38nCBwgHm/R/Wxc7BSv
-      il5+j1SL/OmTjN+WJaeiK9By/+8CXDgJrEvBtOV8EkexE5NAcG1oI7a46sfoTZwe
-      tdL35Xscxft/Ec7nmr+etqDunIGPD8ngvW3IVS8CgYAuRVsOWFj3j9B9PZrZrrXN
-      ScNuGIADKV2LKuKcfdBQx3NVJhcjcjjKiN7mVaGAOtQ0pCpK5Biqp2kZQ2Rn/4Ek
-      5hAXlCzwLKDM3fMSs76en77RrzXkrNrYsIdYUhHjaH5yhnXMI6tveHYUadT5hyUN
-      9dD9znZFiGE4OtijENYKjQKBgCDEuEptDZIj57BLg0rKUJHNn+LVhGXu4uyw9Gh+
-      vo66WnBp+zSpG6nhtgZLLKQW5VCMNjDySK0Yocv8PB61xOJ8JdY+eCpNCn5PWIfU
-      DQ3JjhUTZLJrS/UwiCcXLGCubiwUt5f+EHTTQW/sYoBzHPH9AAPXgmSJiRR3hVSg
-      cIhRAoGBAJtEumIziuOPJZ4FtzyvuMzazmJWJU3eSbhAb5IlZYtiLd7cD0mCtaT7
-      DaBhT6QnS+NvSnVMavWuO+vuSw+oD+UDgcn5/sPA99CXtHNivsfzlgLr0CsclAhy
-      +ZUmGY020dMPTqFYcG2uqUjCQ0ZZNKqyGfxyn4B640dQb9NLSZPm
-      -----END RSA PRIVATE KEY-----
+      -----BEGIN OPENSSH PRIVATE KEY-----
+      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
+      -----END OPENSSH PRIVATE KEY-----
     region: RegionOne
-    secGroups: all-access
+    secGroups: default
     sshPort: 22
     sshUser: ubuntu
-    tenantName: gcuba
-    username: gcuba
+    tenantName: hventura
+    username: hventura
+
+addons:
+  monitoring:
+    enabled: false
+    # version: 104.1.0+up57.0.3
+    # values:
+      # values here
+
+  longhorn:
+    enabled: false
+    # version: 103.2.2+up1.5.4
+    # values:
+      # values here
+
+  metallb:
+    enabled: false
+    # values:
+      # values here

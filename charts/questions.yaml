@@ -22,15 +22,16 @@ questions:
   - openstack
   group: "General"
 - variable: kubernetesVersion
-  default: v1.22.6+rke2r1
+  default: v1.30.4+rke2r1
   description: "Specify Kubernetes version"
   label: "Kubernetes Version"
   type: enum
   required: true
   options:
-  - v1.22.17+rke2r1
-  - v1.23.17+rke2r1
-  - v1.24.17+rke2r1
+  - v1.30.4+rke2r1
+  - v1.29.8+rke2r1
+  - v1.28.13+rke2r1
+  - v1.27.16+rke2r2
   group: "General"
 - variable: rke.localClusterAuthEndpoint.enabled
   default: false
@@ -52,7 +53,7 @@ questions:
     description: "Local auth access endpoint CACerts"
     type: multiline
     group: "Auth Access Endpoint"
-- variable: monitoring.enabled
+- variable: addons.monitoring.enabled
   default: false
   label: "Enable monitoring"
   description: "Enable monitoring"
@@ -72,6 +73,26 @@ questions:
     description: "Custom monitoring chart values"
     type: multiline
     group: "Monitoring"
+- variable: addons.metallb.enabled
+  default: false
+  label: 'Enable MetalLB'
+  description: 'Enable MetalLB'
+  type: boolean
+  group: 'MetalLB'
+  show_subquestion_if: true
+  subquestions:
+    - variable: monitoring.version
+      default:
+      label: 'Monitoring Version'
+      description: 'Choose chart version of monitoring. If empty latest version will be installed'
+      type: string
+      group: 'Monitoring'
+    - variable: monitoring.values
+      default:
+      label: 'Monitoring Values'
+      description: 'Custom monitoring chart values'
+      type: multiline
+      group: 'Monitoring'
 - variable: nodepools.0.name
   default:
   description: "Specify nodepool name"
