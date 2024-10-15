@@ -43,7 +43,7 @@ netId: "{{ default "" $nodepool.netId }}"
 {{- if $nodepool.netName }}
 netName: {{ $nodepool.netName }}
 {{- end }}
-novaNetwork: "{{ default "false" $nodepool.novaNetwork }}"
+novaNetwork: {{ default "false" $nodepool.novaNetwork }}
 password: "{{ default "" $nodepool.password }}"
 privateKeyFile: |
 {{ $nodepool.privateKeyFile | indent 2 }}
