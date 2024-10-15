@@ -17,7 +17,7 @@ spec:
   {{ toYaml .Values.cluster.config.agentEnvs | indent 4 }}
   {{- end }}
   {{- if .Values.cloudCredentialSecretName }}
-  cloudCredentialSecretName: {{ .Values.cloudCredentialSecretName }}
+  cloudCredentialSecretName: cattle-global-data:{{ .Values.cloudCredentialSecretName }}
   {{- end }}
   # clusterAPIConfig:
   # clusterAgentDeploymentCustomization:
