@@ -56,44 +56,6 @@ spec:
       {{- toYaml . | nindent 6 }}
     {{- end }}
     {{- end }}
-    {{- if eq $.Values.cloudprovider "harvester" }}
-    chartValues:
-      harvester-cloud-provider:
-        cloudConfigPath: /var/lib/rancher/rke2/etc/config-files/cloud-provider-config
-        global:
-          cattle:
-            clusterName: {{ .Values.cluster.name }}
-    {{- end }}
-    {{- if eq $.Values.cloudprovider "vsphere" }}
-    chartValues:
-      rke2-calico: {}
-      rancher-vsphere-cpi:
-        vCenter:
-          host: {{ .Values.vcenter.host }}
-          username: {{ .Values.vcenter.username }}
-          password: {{ .Values.vcenter.password }}
-          labels:
-            generate: false
-          datacenters: {{ .Values.vcenter.datacenters }}
-      rancher-vsphere-csi:
-        asyncQueryVolume:
-          enabled: {{ .Values.vcenter.vsphere.asyncQueryVolume.enabled | default true }}}
-        csiController:
-          csiResizer:
-            enabled: {{ .Values.vcenter.vsphere.csiController.csiResizer.enabled | default true }}
-        improvedVolumeTopology:
-          enabled: {{ .Values.vcenter.vsphere.improvedVolumeTopology.enabled | default true }}
-        onlineVolumeExtend:
-          enabled: {{ .Values.vcenter.vsphere.onlineVolumeExtend.enabled | default true }}
-        triggerCsiFullsync:
-          enabled: {{ .Values.vcenter.vsphere.triggerCsiFullsync.enabled | default true }}
-        vCenter:
-          datacenters: {{ .Values.vcenter.datacenters }}
-          host: {{ .Values.vcenter.host }}
-          username: {{ .Values.vcenter.username }}
-          password: {{ .Values.vcenter.password }}
-          insecureFlag: {{ .Values.vcenter.skip_tls_verify | default false }}
-    {{- end }}
     # etcd:
     # etcdSnapshotCreate:
     # etcdSnapshotRestore:
@@ -178,21 +140,8 @@ spec:
       etcdRole: {{ $nodepool.etcd }}
       workerRole: {{ $nodepool.worker }}
       machineConfigRef:
-        {{- if eq $.Values.cloudprovider "amazonec2" }}
-        kind: Amazonec2Config
-        {{- else if eq $.Values.cloudprovider "vsphere" }}
-        kind: VmwarevsphereConfig
-        {{- else if eq $.Values.cloudprovider "harvester" }}
-        kind: HarvesterConfig
-        {{- else if eq $.Values.cloudprovider "digitalocean" }}
-        kind: DigitaloceanConfig
-        {{- else if eq $.Values.cloudprovider "azure" }}
-        kind: AzureConfig
-        {{- else if eq $.Values.cloudprovider "openstack" }}
+        {{- if eq $.Values.cloudprovider "openstack" }}
         kind: OpenstackConfig
-        {{- else if eq $.Values.cloudprovider "elemental" }}
-        apiVersion: elemental.cattle.io/v1beta1
-        kind: MachineInventorySelectorTemplate
         {{- end}}
         name: {{ $nodepool.name }}
       displayName: {{ $nodepool.displayName | default $nodepool.name }}
