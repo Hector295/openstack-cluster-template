@@ -33,6 +33,12 @@ questions:
   - v1.28.13+rke2r1
   - v1.27.16+rke2r2
   group: "General"
+- variable: rke.config.additionalManifests
+  default:
+  label: "Additional Manifests"
+  description: "Additional Kubernetes Manifest YAML to be applied to the cluster on startup."
+  group: "General"
+  type: multiline
 - variable: rke.localClusterAuthEndpoint.enabled
   default: false
   label: "Local Auth endpoint"
