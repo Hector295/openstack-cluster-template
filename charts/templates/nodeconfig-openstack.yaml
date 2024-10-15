@@ -14,60 +14,60 @@ metadata:
 {{ toYaml $nodepool.labels | indent 4 }}
 {{- end }}
 activeTimeout: "{{ default "200" $nodepool.activeTimeout }}"
-applicationCredentialId: {{ default "" $nodepool.applicationCredentialId }}
-applicationCredentialName: {{ default "" $nodepool.applicationCredentialName }}
-applicationCredentialSecret: {{ default "" $nodepool.applicationCredentialSecret }}
+applicationCredentialId: "{{ default "" $nodepool.applicationCredentialId }}"
+applicationCredentialName: "{{ default "" $nodepool.applicationCredentialName }}"
+applicationCredentialSecret: "{{ default "" $nodepool.applicationCredentialSecret }}"
 authUrl: {{ $nodepool.authUrl | quote }}
 availabilityZone: {{ default "nova" $nodepool.availabilityZone }}
 bootFromVolume: {{ default "false" $nodepool.bootFromVolume }}
-cacert: {{ default "" $nodepool.cacert }}
+cacert: "{{ default "" $nodepool.cacert }}"
 configDrive: {{ default "false" $nodepool.configDrive }}
-domainId: {{ default "" $nodepool.domainId }}
+domainId: "{{ default "" $nodepool.domainId }}"
 {{- if $nodepool.domainName }}
 domainName: {{ $nodepool.domainName }}
 {{- end }}
 endpointType: {{ default "publicURL" $nodepool.endpointType }}
-flavorId: {{ default "" $nodepool.flavorId }}
+flavorId: "{{ default "" $nodepool.flavorId }}"
 {{- if $nodepool.flavorName }}
 flavorName: {{ $nodepool.flavorName | quote }}
 {{- end }}
-floatingipPool: {{ default "" $nodepool.floatingipPool }}
-imageId: {{ default "" $nodepool.imageId }}
+floatingipPool: "{{ default "" $nodepool.floatingipPool }}"
+imageId: "{{ default "" $nodepool.imageId }}"
 {{- if $nodepool.imageName }}
 imageName: {{ $nodepool.imageName | quote }}
 {{- end }}
-insecure: {{ default "false" $nodepool.insecure }}
+insecure: "{{ default "false" $nodepool.insecure }}"
 ipVersion: "{{ default "4" $nodepool.ipVersion }}"
 keypairName: {{ $nodepool.keypairName }}
-netId: {{ default "" $nodepool.netId }}
+netId: "{{ default "" $nodepool.netId }}"
 {{- if $nodepool.netName }}
 netName: {{ $nodepool.netName }}
 {{- end }}
-novaNetwork: {{ default "false" $nodepool.novaNetwork }}
-password: {{ default "" $nodepool.password }}
+novaNetwork: "{{ default "false" $nodepool.novaNetwork }}"
+password: "{{ default "" $nodepool.password }}"
 privateKeyFile: |
 {{ $nodepool.privateKeyFile | indent 2 }}
 region: {{ $nodepool.region }}
 sshPort: {{ $nodepool.sshPort | quote }}
 sshUser: {{ $nodepool.sshUser }}
 secGroups: {{ $nodepool.secGroups }}
-tenantDomainId: {{ default "" $nodepool.tenantDomainId }}
-tenantDomainName: {{ default "" $nodepool.tenantDomainName }}
-tenantId: {{ default "" $nodepool.tenantId }}
+tenantDomainId: "{{ default "" $nodepool.tenantDomainId }}"
+tenantDomainName: "{{ default "" $nodepool.tenantDomainName }}"
+tenantId: "{{ default "" $nodepool.tenantId }}"
 {{- if $nodepool.tenantName }}
 tenantName: {{ $nodepool.tenantName }}
 {{- end }}
-userDataFile: {{ default "" $nodepool.userDataFile }}
-userDomainId: {{ default "" $nodepool.userDomainId }}
-userDomainName: {{ default "" $nodepool.userDomainName }}
-userId: {{ default "" $nodepool.userId }}
+userDataFile: "{{ default "" $nodepool.userDataFile }}"
+userDomainId: "{{ default "" $nodepool.userDomainId }}"
+userDomainName: "{{ default "" $nodepool.userDomainName }}"
+userId: "{{ default "" $nodepool.userId }}"
 {{- if $nodepool.username }}
 username: {{ $nodepool.username }}
 {{- end }}
-volumeDevicePath: {{ default "" $nodepool.volumeDevicePath }}
-volumeId: {{ default "" $nodepool.volumeId }}
-volumeName: {{ default "" $nodepool.volumeName }}
-volumeSize: {{ default "" $nodepool.volumeSize }}
-volumeType: {{ default "" $nodepool.volumeType }}
+volumeDevicePath: "{{ default "" $nodepool.volumeDevicePath }}"
+volumeId: "{{ default "" $nodepool.volumeId }}"
+volumeName: "{{ default "" $nodepool.volumeName }}"
+volumeSize: "{{ default "" $nodepool.volumeSize }}"
+volumeType: "{{ default "" $nodepool.volumeType }}"
 {{- end }}
 {{- end }}
