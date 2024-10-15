@@ -12,7 +12,7 @@ spec:
   version: {{ .Values.addons.monitoring.version }}
   {{- if .Values.addons.monitoring.values }}
   values:
-{{ toYaml .Values.addons.monitoring.values | indent 4 }}
+{{ toYaml (fromYaml .Values.addons.monitoring.values) | indent 4 }}
   {{- end }}
   defaultNamespace: "cattle-monitoring-system"
   targets:
@@ -30,7 +30,7 @@ spec:
   version: {{ .Values.addons.monitoring.version }}
   {{- if .Values.addons.monitoring.values }}
   values:
-{{ toYaml .Values.addons.monitoring.values | indent 4 }}
+{{ toYaml (fromYaml .Values.addons.monitoring.values) | indent 4 }}
   {{- end }}
   defaultNamespace: "cattle-monitoring-system"
   targets:
@@ -70,7 +70,7 @@ spec:
   version: 0.14.5
   {{- if .Values.addons.metallb.values }}
   values:
-{{ toYaml .Values.addons.metallb.values | indent 4 }}
+{{ toYaml (fromYaml .Values.addons.metallb.values) | indent 4 }}
   {{- end }}
   defaultNamespace: "metallb-system"
   targets:
