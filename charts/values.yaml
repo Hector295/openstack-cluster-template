@@ -110,7 +110,7 @@ cluster:
 
 cloudprovider: openstack
 
-cloudCredentialSecretName: ocp2
+cloudCredentialId: cc-92kmg
 
 nodepools:
   - etcd: true
