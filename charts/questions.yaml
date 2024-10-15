@@ -87,18 +87,19 @@ questions:
   group: 'MetalLB'
   show_subquestion_if: true
   subquestions:
-    - variable: monitoring.version
-      default:
-      label: 'Monitoring Version'
-      description: 'Choose chart version of monitoring. If empty latest version will be installed'
+    - variable: metallb.version
+      default: "0.14.5"
+      label: 'Metallb Version'
+      description: 'Only version 0.14.5 is available'
       type: string
-      group: 'Monitoring'
-    - variable: monitoring.values
+      read_only: true
+      group: 'MetalLB'
+    - variable: metallb.values
       default:
-      label: 'Monitoring Values'
-      description: 'Custom monitoring chart values'
+      label: 'Metallb Values'
+      description: 'Custom metallb chart values'
       type: multiline
-      group: 'Monitoring'
+      group: 'MetalLB'
 - variable: nodepools.0.name
   default:
   description: "Specify nodepool name"
