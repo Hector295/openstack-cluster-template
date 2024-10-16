@@ -7,7 +7,7 @@ metadata:
   namespace: fleet-default
 spec:
   chart: "rancher-monitoring-crd"
-  repoName: "WhiteCruiser"
+  repoName: "whitecruiser-principal"
   releaseName: "rancher-monitoring-crd"
   version: {{ .Values.addons.monitoring.version }}
   {{- if .Values.addons.monitoring.values }}
@@ -25,7 +25,7 @@ metadata:
   namespace: fleet-default
 spec:
   chart: "rancher-monitoring"
-  repoName: "WhiteCruiser"
+  repoName: "whitecruiser-principal"
   releaseName: "rancher-monitoring"
   version: {{ .Values.addons.monitoring.version }}
   {{- if .Values.addons.monitoring.values }}
