@@ -17,6 +17,13 @@ activeTimeout: "{{ default "200" $nodepool.activeTimeout }}"
 applicationCredentialId: "{{ default "" $nodepool.applicationCredentialId }}"
 applicationCredentialName: "{{ default "" $nodepool.applicationCredentialName }}"
 applicationCredentialSecret: "{{ default "" $nodepool.applicationCredentialSecret }}"
+{{- if $nodepool.allowedAddressPairs }}
+allowedAddressPairs:
+{{- range $nodepool.allowedAddressPairs }}
+  - {{ . }}
+{{- else }}
+allowedAddressPairs: []
+{{- end }}
 authUrl: {{ $nodepool.authUrl | quote }}
 availabilityZone: {{ default "nova" $nodepool.availabilityZone }}
 bootFromVolume: {{ default "false" $nodepool.bootFromVolume }}
