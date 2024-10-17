@@ -21,6 +21,7 @@ applicationCredentialSecret: "{{ default "" $nodepool.applicationCredentialSecre
 allowedAddressPairs:
 {{- range $nodepool.allowedAddressPairs }}
   - {{ . }}
+{{- end }}
 {{- else }}
 allowedAddressPairs: []
 {{- end }}
@@ -76,5 +77,5 @@ volumeId: "{{ default "" $nodepool.volumeId }}"
 volumeName: "{{ default "" $nodepool.volumeName }}"
 volumeSize: "{{ default "" $nodepool.volumeSize }}"
 volumeType: "{{ default "" $nodepool.volumeType }}"
-{{- end }}
-{{- end }}
+{{- end }}  # Fin del rango de nodepools
+{{- end }}  # Fin del if cloudprovider == openstack
