@@ -110,7 +110,7 @@ cluster:
 
 cloudprovider: openstack
 
-cloudCredentialId: cc-92kmg
+cloudCredentialId: cc-5cts4
 
 nodepools:
   - etcd: true
