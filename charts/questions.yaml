@@ -265,7 +265,7 @@ questions:
   show_subquestion_if: true
   subquestions:
     - variable: nodepools.0.userDataFile
-      default:
+      default: ""
       label: "userDataFile"
       description: "File contents for userDataFile"
       group: "Nodepools"
