@@ -269,4 +269,4 @@ questions:
       label: "userDataFile"
       description: "File contents for userDataFile"
       group: "Nodepools"
-      type: multiline
+      type: string
