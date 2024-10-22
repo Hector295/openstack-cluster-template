@@ -101,7 +101,7 @@ spec:
 apiVersion: management.cattle.io/v3
 kind: ManagedChart
 metadata:
-  name: kubevirt-{{ .Values.cluster.name }}
+  name: openebs-{{ .Values.cluster.name }}
   namespace: fleet-default
 spec:
   chart: "openebs"
