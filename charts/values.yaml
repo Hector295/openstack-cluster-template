@@ -110,7 +110,7 @@ cluster:
 
 cloudprovider: openstack
 
-cloudCredentialId: cc-5cts4
+cloudCredentialSecretName: ocp2
 
 nodepools:
   - etcd: true
