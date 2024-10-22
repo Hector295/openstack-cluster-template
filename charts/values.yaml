@@ -110,8 +110,6 @@ cluster:
 
 cloudprovider: openstack
 
-cloudCredentialId: cc-5cts4
-
 nodepools:
   - etcd: true
     controlplane: true
