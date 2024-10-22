@@ -21,7 +21,7 @@ questions:
   options:
   - openstack
   group: "General"
-- variable: kubernetesVersion
+- variable: cluster.config.kubernetesVersion
   default: v1.30.4+rke2r1
   description: "Specify Kubernetes version"
   label: "Kubernetes Version"
@@ -33,13 +33,13 @@ questions:
   - v1.28.13+rke2r1
   - v1.27.16+rke2r2
   group: "General"
-- variable: rke.config.additionalManifests
+- variable: cluster.config.additionalManifests
   default:
   label: "Additional Manifests"
   description: "Additional Kubernetes Manifest YAML to be applied to the cluster on startup."
   group: "General"
   type: multiline
-- variable: rke.localClusterAuthEndpoint.enabled
+- variable: cluster.localClusterAuthEndpoint.enabled
   default: false
   label: "Local Auth endpoint"
   description: "Enable local auth access endpoint"
@@ -47,13 +47,13 @@ questions:
   group: "Auth Access Endpoint"
   show_subquestion_if: true
   subquestions:
-  - variable: rke.localClusterAuthEndpoint.fqdn
+  - variable: cluster.localClusterAuthEndpoint.fqdn
     default:
     description: "Local auth access endpoint FQDN"
     label: "Auth Endpoint FQDN"
     type: hostname
     group: "Auth Access Endpoint"
-  - variable: rke.localClusterAuthEndpoint.caCerts
+  - variable: cluster.localClusterAuthEndpoint.caCerts
     default:
     label: "Auth Endpoint Cacerts"
     description: "Local auth access endpoint CACerts"
@@ -105,7 +105,7 @@ questions:
   label: 'Enable KubeVirt'
   description: 'Enable KubeVirt'
   type: boolean
-  group: 'MetalLB'
+  group: 'KubeVirt'
 - variable: nodepools.0.name
   default:
   description: "Specify nodepool name"
