@@ -100,6 +100,12 @@ questions:
       description: 'Custom metallb chart values'
       type: multiline
       group: 'MetalLB'
+- variable: addons.kubevirt.enabled
+  default: false
+  label: 'Enable KubeVirt'
+  description: 'Enable KubeVirt'
+  type: boolean
+  group: 'MetalLB'
 - variable: nodepools.0.name
   default:
   description: "Specify nodepool name"

@@ -172,6 +172,11 @@ addons:
     # version: 103.2.2+up1.5.4
     # values:
       # values here
+  kubevirt:
+    enabled: false
+      # version: 103.2.2+up1.5.4
+    # values:
+    # values here
 
   metallb:
     enabled: false
