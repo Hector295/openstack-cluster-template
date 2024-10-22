@@ -87,10 +87,32 @@ metadata:
   namespace: fleet-default
 spec:
   chart: "kubevirt"
-  repoName: "repo-kubevirt"
+  repoName: "extra-rancher-repo"
   releaseName: "kubevirt"
   version: 1.3.1
   defaultNamespace: "kubevirt"
+  targets:
+  - clusterName: {{ .Values.cluster.name }}
+---
+{{- end }}
+{{- end }}
+{{- if .Values.addons.openebs }}
+{{- if .Values.addons.openebs.enabled }}
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: kubevirt-{{ .Values.cluster.name }}
+  namespace: fleet-default
+spec:
+  chart: "openebs"
+  repoName: "extra-rancher-repo"
+  releaseName: "openebs"
+  version: 4.1.1
+  defaultNamespace: "openebs"
+  {{- if .Values.addons.openebs.values }}
+  values:
+{{ toYaml (fromYaml .Values.addons.openebs.values) | indent 4 }}
+  {{- end }}
   targets:
   - clusterName: {{ .Values.cluster.name }}
 ---

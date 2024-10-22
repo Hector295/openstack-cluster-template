@@ -100,6 +100,27 @@ questions:
       description: 'Custom metallb chart values'
       type: multiline
       group: 'MetalLB'
+- variable: addons.openebs.enabled
+  default: false
+  label: 'Enable OpenEBS'
+  description: 'Enable OpenEBS'
+  type: boolean
+  group: 'OpenEBS'
+  show_subquestion_if: true
+  subquestions:
+    - variable: addons.openebs.version
+      default: "4.1.1"
+      label: 'OpenEBS Version'
+      description: 'Only version 0.14.5 is available'
+      type: string
+      read_only: true
+      group: 'OpenEBS'
+    - variable: addons.openebs.values
+      default:
+      label: 'OpenEBS Values'
+      description: 'Custom openebs chart values'
+      type: multiline
+      group: 'OpenEBS'
 - variable: addons.kubevirt.enabled
   default: false
   label: 'Enable KubeVirt'
@@ -235,3 +256,17 @@ questions:
   description: "Openstack User name"
   show_if: cloudprovider=openstack
   group: "Nodepools"
+- variable: nodepools.0.configDrive
+  default: false
+  label: "Config drive"
+  description: "Enables the OpenStack config drive for the instance"
+  group: "Nodepools"
+  type: boolean
+  show_subquestion_if: true
+  subquestions:
+    - variable: nodepools.0.userDataFile
+      default:
+      label: "userDataFile"
+      description: "File contents for userDataFile"
+      group: "Nodepools"
+      type: multiline
