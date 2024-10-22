@@ -16,8 +16,8 @@ spec:
   agentEnvVars:
   {{ toYaml .Values.cluster.config.agentEnvs | indent 4 }}
   {{- end }}
-  {{- if .Values.cloudCredentialId }}
-  cloudCredentialSecretName: {{ .Values.cloudCredentialId }}
+  {{- if .Values.cloudCredentialSecretName }}
+  cloudCredentialSecretName: {{ .Values.cloudCredentialSecretName }}
   {{- end }}
   # clusterAPIConfig:
   # clusterAgentDeploymentCustomization:
