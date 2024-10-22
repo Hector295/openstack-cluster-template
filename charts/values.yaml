@@ -5,7 +5,7 @@ cluster:
   # labels:
   # key: value
   config:
-    kubernetesVersion: v1.29.8+rke2r1 # https://github.com/rancher/rke2/releases
+    #kubernetesVersion: v1.29.8+rke2r1 # https://github.com/rancher/rke2/releases
     enableNetworkPolicy: false
     localClusterAuthEndpoint:
       enabled: false
@@ -113,6 +113,7 @@ cloudprovider: openstack
 nodepools:
   - etcd: true
     controlplane: true
+    configDrive: true
     worker: true
     labels: {}
     quantity: 1
