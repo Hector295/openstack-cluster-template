@@ -67,7 +67,7 @@ tenantName: {{ $nodepool.tenantName }}
 {{- end }}
 {{- if $nodepool.userDataFile }}
 userDataFile: |
-  {{ $nodepool.userDataFile | nindent 2 }}
+  {{- $nodepool.userDataFile | nindent 2 }}
 {{- else }}
 userDataFile: ""
 {{- end }}
