@@ -113,7 +113,6 @@ cloudprovider: openstack
 nodepools:
   - etcd: true
     controlplane: true
-    configDrive: true
     worker: true
     labels: {}
     quantity: 1
