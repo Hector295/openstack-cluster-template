@@ -133,16 +133,19 @@ spec:
     {{- end }}
     # machinePoolDefaults:
     machinePools:
-    {{- if .Values.nodepools }} {{ range $index, $nodepool := .Values.nodepools }}
+    {{- if .Values.nodepools }}
+    {{- range $poolIndex, $nodepool := .Values.nodepools }}
+    {{- range $quantityIndex := until (int $nodepool.quantity) }}
     - name: {{ $nodepool.name }}
-      quantity: {{ $nodepool.quantity }}
+      quantity: 1
       controlPlaneRole: {{ $nodepool.controlplane }}
-      {{- if $nodepool.labels }}
-      {{- with $nodepool.labels }}
       labels:
-      {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- end }}
+        rke.cattle.io/node-name: {{ $nodepool.name }}-{{ $quantityIndex }}
+        {{- if $nodepool.labels }}
+        {{- with $nodepool.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- end }}
       etcdRole: {{ $nodepool.etcd }}
       workerRole: {{ $nodepool.worker }}
       machineConfigRef:
@@ -173,6 +176,7 @@ spec:
       {{- end }}
       {{- if $nodepool.unhealthyNodeTimeout }}
       unhealthyNodeTimeout: {{ $nodepool.unhealthyNodeTimeout }}
+      {{- end }}
       {{- end }}
       {{- end }}
     {{- end }}
