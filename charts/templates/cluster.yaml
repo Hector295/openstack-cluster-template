@@ -136,7 +136,7 @@ spec:
     {{- if .Values.nodepools }}
     {{- range $poolIndex, $nodepool := .Values.nodepools }}
     {{- range $quantityIndex := until (int $nodepool.quantity) }}
-    - name: {{ $nodepool.name }}
+    - name: {{ $nodepool.name }}-{{ $quantityIndex }}
       quantity: 1
       controlPlaneRole: {{ $nodepool.controlplane }}
       labels:
@@ -153,7 +153,7 @@ spec:
         kind: OpenstackConfig
         {{- end}}
         name: {{ $nodepool.name }}
-      displayName: {{ $nodepool.displayName | default $nodepool.name }}
+      displayName: {{ $nodepool.displayName | default $nodepool.name }}-{{ $quantityIndex }}
       {{- if $nodepool.drainBeforeDelete }}
       drainBeforeDelete: {{ $nodepool.drainBeforeDelete }}
       {{- end }}
