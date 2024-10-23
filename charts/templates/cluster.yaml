@@ -137,6 +137,10 @@ spec:
     - name: {{ $nodepool.name }}
       quantity: {{ $nodepool.quantity }}
       controlPlaneRole: {{ $nodepool.controlplane }}
+      {{- if $nodepool.labels }}
+        labels:
+      {{ toYaml $nodepool.labels | indent 4 }}
+      {{- end }}
       etcdRole: {{ $nodepool.etcd }}
       workerRole: {{ $nodepool.worker }}
       machineConfigRef:

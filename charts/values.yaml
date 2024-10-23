@@ -168,6 +168,10 @@ nodepools:
         - echo "nvme_tcp" | sudo tee -a /etc/modules
         - echo 1024 | sudo tee /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
         - echo "vm.nr_hugepages = 1024" | sudo tee -a /etc/sysctl.conf
+        - echo "fs.inotify.max_user_watches=524288" >> /etc/sysctl.conf
+        - echo "fs.inotify.max_user_instances=1024" >> /etc/sysctl.conf
+        - echo "fs.inotify.max_queued_events=16384" >> /etc/sysctl.conf
+        - sysctl -p
 
 addons:
   monitoring:
