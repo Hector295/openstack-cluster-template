@@ -118,3 +118,25 @@ spec:
 ---
 {{- end }}
 {{- end }}
+{{- if .Values.addons.logging }}
+{{- if .Values.addons.logging.enabled }}
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: rancher-logging-{{ .Values.cluster.name }}
+  namespace: fleet-default
+spec:
+  chart: "rancher-logging"
+  repoName: "whitecruiser-principal"
+  releaseName: "rancher-logging"
+  version: 104.1.0+up4.8.0
+  defaultNamespace: "cattle-logging-system"
+  {{- if .Values.addons.logging.values }}
+  values:
+{{ toYaml (fromYaml .Values.addons.logging.values) | indent 4 }}
+  {{- end }}
+  targets:
+  - clusterName: {{ .Values.cluster.name }}
+---
+{{- end }}
+{{- end }}

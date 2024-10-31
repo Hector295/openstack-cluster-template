@@ -121,6 +121,20 @@ questions:
       description: 'Custom openebs chart values'
       type: multiline
       group: 'OpenEBS'
+- variable: addons.logging.enabled
+  default: false
+  label: 'Enable Rancher Logging'
+  description: 'Enable Rancher Logging'
+  type: boolean
+  group: 'Logging'
+  show_subquestion_if: true
+  subquestions:
+    - variable: addons.logging.values
+      default:
+      label: 'Rancher Logging Values'
+      description: 'Custom logging chart values'
+      type: multiline
+      group: 'Logging'
 - variable: addons.kubevirt.enabled
   default: false
   label: 'Enable KubeVirt'
