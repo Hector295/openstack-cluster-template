@@ -1,127 +1,222 @@
+addons:
+  kubevirt:
+    enabled: true
+  logging:
+    enabled: true
+    values: |-
+      rke2:
+        enabled: true
+      logging:
+        enableRecreateWorkloadOnImmutableFieldChange: true
+        enabled: true
+        clusterFlows:
+          - name: all-logs
+            spec:
+              filters:
+                - record_modifier:
+                    records:
+                      - cluster-name: cluster-rke2
+              globalOutputRefs:
+                - fluentd-forward
+              match:
+                - select: {}
+        clusterOutputs:
+          - name: fluentd-forward
+            spec:
+              forward:
+                buffer:
+                  flush_interval: 10s
+                  retry_forever: false
+                  retry_max_interval: '30'
+                  type: file
+                compress: gzip
+                require_ack_response: false
+                servers:
+                  - host: 10.100.18.5
+                    port: 24224
+                tls_insecure_mode: true
+      hostTailer:
+        enabled: true
+        fileTailers:
+          - name: syslog
+            path: /var/log/syslog
+  longhorn:
+    enabled: false
+  metallb:
+    enabled: true
+    values: |-
+      speaker:
+        ignoreExcludeLB: true
+    version: 0.14.5
+  monitoring:
+    enabled: true
+    version: 104.1.0+up57.0.3
+    values: |-
+      alertmanager:
+        enabled: false
+      prometheus:
+        thanosService:
+          enabled: true
+        prometheusSpec:
+          externalLabels:
+            k8s_cluster: cluster-rke2
+          thanos:
+            objstoreConfig:
+              config:
+                access_key: 4AYApsWxJV5pd81dWoqD
+                bucket: rke2
+                endpoint: 10.100.17.27:9000
+                insecure: true
+                secret_key: xmCh6780sHw93t54dPPfOLKrCAu0vpMp7U821cEQ
+              type: S3
+        thanosIngress:
+          annotations:
+            nginx.ingress.kubernetes.io/backend-protocol: GRPC
+            nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+            nginx.ingress.kubernetes.io/grpc-backend: 'true'
+            nginx.ingress.kubernetes.io/protocol: h2c
+            nginx.ingress.kubernetes.io/proxy-read-timeout: '160'
+          enabled: true
+          hosts:
+            - thanos.rke2.external.whitestack.com
+          labels: {}
+          nodePort: 30901
+          paths:
+            - /
+          servicePort: 10901
+          tls: null
+          pathType: ImplementationSpecific
+  openebs:
+    enabled: true
+    values: |-
+      openebs-crds:
+        csi:
+          volumeSnapshots:
+            enabled: false
+      mayastor:
+        storageClass:
+          enabled: true
+          nameSuffix: multiple-replica
+          default: true
+          allowVolumeExpansion: true
+          parameters:
+            protocol: nvmf
+            repl: 3
+    version: 4.1.1
+cloudprovider: openstack
 cluster:
-  name: cluster-rke2
-  # annotations:
-  # key: value
-  # labels:
-  # key: value
   config:
-    #kubernetesVersion: v1.29.8+rke2r1 # https://github.com/rancher/rke2/releases
-    enableNetworkPolicy: false
-    localClusterAuthEndpoint:
-      enabled: false
-    # additionalManifests: |-
-    #   apiVersion: v1
-    #   kind: Pod
-    #   metadata:
-    #     name: example-manifest
-    #   spec:
-    #     containers:
-    #     - name: example
-    #       image: example:1.0.0
-    #       ports:
-    #       - containerPort: 80
-    # agentEnvVars:
-    # - name: ""
-    #   value: ""
     chartValues:
       rke2-calico: {}
-    # defaultClusterRoleForProjectMembers: ''
-    # defaultPodSecurityAdmissionConfigurationTemplateName: ''
-    # defaultPodSecurityPolicyTemplateName: ''
+    enableNetworkPolicy: false
     globalConfig:
-      systemDefaultRegistry: docker.io # default registry
-      cni: calico # canal, calico, cilium, multus,canal, multus,calico, multus,cilium
-        # token: ''
-        # tls-san:
-        # - url
-        # - ip
-        # disable:
-        # - rke2-coredns
-      # - rke2-ingress-nginx
-      # - rke2-metrics-server
-      disable_scheduler: false
+      cloud_provider_name: ''
+      cni: calico
       disable_cloud_controller: false
       disable_kube_proxy: false
-      etcd_expose_metrics: false
-      profile: '' # cis-1.6, cis-1.23
+      disable_scheduler: false
       etcd:
         disableSnapshots: true
         snapshotRetention: 5
         snapshotScheduleCron: 0 */5 * * *
-      selinux: false
-      secrets_encryption: false
-      write_kubeconfig_mode: 0600
-      use_service_account_credentials: false
+      etcd_expose_metrics: false
+      profile: ''
       protect_kernel_defaults: false
-      cloud_provider_name: '' # https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/kubernetes-clusters-in-rancher-setup/set-up-cloud-providers
-      # cloud_provider_config: '' # cloud provider config secret here (example: secret://fleet-default:cloudprovider)
-      # kube_controller_manager_arg:
-      # - kube controller manager arguments here (https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager)
-      # kube_scheduler_arg:
-      # - kube scheduler arguments here (https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler)
-      # kube_apiserver_arg:
-      # - kube apiserver arguments here (https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver)
-      # kube_proxy_arg:
-      # - kube proxy arguments here (https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy)
-      # kubelet_arg:
-      # - kubelet arguments here (https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet)
-      # controlPlaneConfig:
-      # same options as globalConfig
-      # only will apply to the control plane nodes
-      # workerConfig:
-      # same options as globalConfig
-      # only will apply to the worker nodes
+      secrets_encryption: false
+      selinux: false
+      systemDefaultRegistry: docker.io
+      use_service_account_credentials: false
+      write_kubeconfig_mode: 384
+    localClusterAuthEndpoint:
+      enabled: false
     registries:
       enabled: false
-        # configs:
-        # - name: registry.example.com
-        # authConfigSecretName: registry-creds
-        # caBundle: ''
-        # insecureSkipVerify: false
-        # tlsSecretName: ''
-        # mirrors:
-        # - name: docker.io
-        # endpoints: ['registry.example.com']
-      # rewrite:
-      # "^rancher/(.*)": "mirrorproject/rancher-images/$1"
     upgradeStrategy:
       controlPlaneConcurrency: 10%
       controlPlaneDrainOptions:
         enabled: false
-        # deleteEmptyDirData: true
-        # disableEviction: false
-        # force: false
-        # gracePeriod: -1
-        # ignoreDaemonSets: true
-        # ignoreErrors: false
-        # skipWaitForDeleteTimeoutSeconds: 0
-        # timeout: 120
       workerConcurrency: 10%
       workerDrainOptions:
         enabled: false
-        # deleteEmptyDirData: true
-        # disableEviction: false
-        # force: false
-        # gracePeriod: -1
-        # ignoreDaemonSets: true
-        # ignoreErrors: false
-        # skipWaitForDeleteTimeoutSeconds: 0
-        # timeout: 120
-
-cloudprovider: openstack
-
+    additionalManifests: |-
+      ---
+      apiVersion: metallb.io/v1beta1
+      kind: IPAddressPool
+      metadata:
+        name: defaultpool
+        namespace: metallb-system
+      spec:
+        addresses:
+        - 10.100.18.80/32
+        autoAssign: true
+      ---
+      apiVersion: metallb.io/v1beta1
+      kind: L2Advertisement
+      metadata:
+        name: l2advertisement
+        namespace: metallb-system
+      spec:
+        ipAddressPools:
+        - defaultpool
+      ---
+      apiVersion: helm.cattle.io/v1
+      kind: HelmChartConfig
+      metadata:
+        name: rke2-ingress-nginx
+        namespace: kube-system
+      spec:
+        valuesContent: |-
+          controller:
+            service:
+              enabled: true
+              type: LoadBalancer
+              externalTrafficPolicy: Cluster
+            publishService:
+              enabled: true
+            hostPort:
+              enabled: false
+      ---
+      apiVersion: "openebs.io/v1beta2"
+      kind: DiskPool
+      metadata:
+        name: pool-on-node-0
+        namespace: openebs
+      spec:
+        node: node-0
+        disks: ["/dev/vdb"]
+      ---
+      apiVersion: "openebs.io/v1beta2"
+      kind: DiskPool
+      metadata:
+        name: pool-on-node-1
+        namespace: openebs
+      spec:
+        node: node-1
+        disks: ["/dev/vdb"]
+      ---
+      apiVersion: "openebs.io/v1beta2"
+      kind: DiskPool
+      metadata:
+        name: pool-on-node-2
+        namespace: openebs
+      spec:
+        node: node-2
+        disks: ["/dev/vdb"]
+    kubernetesVersion: v1.29.9+rke2r1
+  name: cluster-rke2
+  localClusterAuthEndpoint:
+    enabled: false
 nodepools:
-  - etcd: true
+  - authUrl: http://10.100.1.22:5000
     controlplane: true
-    worker: true
-    labels: {}
-    quantity: 1
-    name: nodepool-1
-    authUrl: "http://10.100.1.22:5000"
     domainName: Default
+    etcd: true
     flavorName: m1.8vcpu.16ram.160disk.80eph.10swap
-    imageName: "Ubuntu 22.04 LTS"
+    imageName: Ubuntu 22.04 LTS
     keypairName: whitecruiser
+    labels:
+      openebs.io/engine: mayastor
+    name: node
     netName: PUBLIC
     privateKeyFile: |
       -----BEGIN RSA PRIVATE KEY-----
@@ -151,12 +246,12 @@ nodepools:
       xr7E4tY38H1hlX4jUa1vQznKCZwyXeldPp0NqMpJQmQeotGHGWArETQDBVKa3mht
       H0EQ78ThFuF+3PVnNBCHxofdhPwQumnJh7BTyMyeqY2swZ2DSuOU
       -----END RSA PRIVATE KEY-----
+    quantity: 3
     region: RegionOne
     secGroups: default
     sshPort: 22
     sshUser: ubuntu
     tenantName: hventura
-    username: hventura
     userDataFile: |
       #cloud-config
       package_update: true
@@ -172,31 +267,12 @@ nodepools:
         - echo "fs.inotify.max_user_instances=1024" >> /etc/sysctl.conf
         - echo "fs.inotify.max_queued_events=16384" >> /etc/sysctl.conf
         - sysctl -p
-
-addons:
-  monitoring:
-    enabled: false
-    version: 104.1.0+up57.0.3
-    # values:
-      # values here
-
-  longhorn:
-    enabled: false
-    # version: 103.2.2+up1.5.4
-    # values:
-      # values here
-  kubevirt:
-    enabled: false
-      # version: 103.2.2+up1.5.4
-    # values:
-    # values here
-
-  metallb:
-    enabled: false
-    # values:
-      # values here
-
-  logging:
-    enabled: false
-    # values:
-    # values here
+        - sudo systemctl disable --now unattended-upgrades
+        - sudo sed -i 's/^APT::Periodic::Update-Package-Lists "1"/APT::Periodic::Update-Package-Lists "0"/' /etc/apt/apt.conf.d/20auto-upgrades
+        - sudo sed -i 's/^APT::Periodic::Unattended-Upgrade "1"/APT::Periodic::Unattended-Upgrade "0"/' /etc/apt/apt.conf.d/20auto-upgrades
+    username: hventura
+    worker: true
+    allowedAddressPairs:
+      - 10.100.18.80:PUBLIC
+    configDrive: true
+cloudCredentialSecretName: cattle-global-data:cc-ws478
