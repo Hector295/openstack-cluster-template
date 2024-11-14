@@ -4,7 +4,7 @@ metadata:
   name: server-dell41-{{ .Values.cluster.name }}
 spec:
   clusterKind: WhiteCruiser
-  serverSelector: whitecruiser-hector
+  serverSelector: whitecruiser-hector-{{ .Values.cluster.name }}
   hostname: hector-dell
   softwareManagement:
     address: 10.100.3.41
@@ -41,6 +41,6 @@ spec:
           routes:
           - to: default
             via: 10.100.3.1
-  role: dell41
+  role: dell41-{{ .Values.cluster.name }}
   clusterRoles:
     - worker
