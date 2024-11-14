@@ -1,0 +1,46 @@
+apiVersion: baremetal.whitestack.com/v1
+kind: BaremetalServer
+metadata:
+  name: server-dell41-{{ .Values.cluster.name }}
+spec:
+  clusterKind: WhiteCruiser
+  serverSelector: whitecruiser-hector
+  hostname: hector-dell
+  softwareManagement:
+    address: 10.100.3.41
+  hardwareManagement:
+    type: idrac
+    address: 10.100.2.41
+    user: whitestack
+    password: whitestack
+  rawNetplan: 
+    network:
+      bonds:
+        bondC:
+          interfaces:
+          - eno1
+          - eno2
+          parameters:
+            lacp-rate: slow
+            mode: 802.3ad
+            transmit-hash-policy: layer2
+      ethernets:
+        eno1: {}
+        eno2: {}
+      version: 2
+      vlans:
+        bondC.1001:
+          addresses:
+          - 10.100.3.41/24
+          id: 1001
+          link: bondC
+          nameservers:
+            addresses:
+            - 8.8.8.8
+            search: []
+          routes:
+          - to: default
+            via: 10.100.3.1
+  role: dell41
+  clusterRoles:
+    - worker

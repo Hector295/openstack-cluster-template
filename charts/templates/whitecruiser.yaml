@@ -1,0 +1,8 @@
+apiVersion: baremetal.whitestack.com/v1
+kind: WhiteCruiser
+metadata:
+  name: whitecruiser-hector-{{ .Values.cluster.name }}
+spec:
+  rancherServerURL: https://whitecruiser.10.100.63.94.nip.io
+  rancherApiKey: token-ntkkp:84htsthztdvzn8rmrgznw8cm6cbvdwddtpsbhzbnjhn27n2656vmwx
+  rancherClusterName: {{ .Values.cluster.name }}

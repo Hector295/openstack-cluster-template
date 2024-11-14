@@ -202,6 +202,13 @@ cluster:
       spec:
         node: node-2
         disks: ["/dev/vdb"]
+      ---
+      apiVersion: catalog.cattle.io/v1
+      kind: ClusterRepo
+      metadata:
+        name: extra-charts
+      spec:
+        gitRepo: https://github.com/Hector295/rancher-extra-charts.git
     kubernetesVersion: v1.29.9+rke2r1
   name: cluster-rke2
   localClusterAuthEndpoint:

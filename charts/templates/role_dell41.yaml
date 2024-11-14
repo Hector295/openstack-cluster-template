@@ -1,0 +1,34 @@
+apiVersion: baremetal.whitestack.com/v1
+kind: ServerRole
+metadata:
+  name: dell41-{{ .Values.cluster.name }}
+spec:
+  storage:
+  - vg_name: vg-root
+    disks:
+      - sda
+    boot: uefi
+    lvs:
+      - name: lv-root
+        size: "-1"
+        fs_type: ext4
+        mount: /
+      - name: lv-logs
+        size: 20GB
+        fs_type: ext4
+        mount: /var/log
+      - name: lv-var-tmp
+        size: 10GB
+        fs_type: ext4
+        mount: /var/tmp
+  kernel_options:
+    version: v6.5.0-28
+  iso_options:
+    image_name: ubuntu-22.04.4-live-server-amd64.iso
+  users:
+    - name: whitestack
+      password: whitestack
+      authorized_keys: 
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDyQwCd7gKxObBzDV357Nl+oQwMggFg0CseB4NtGvmusH3RLUXRuQqJQ5Keu+FKlRfG0QmBT+WEmr5rLN+LDbGKM54yAUDiJV9lWroOWaSbU8ynO9ZwXhPKgfnfvG/HmGTkfGpUQkfZYOSDetbfKJ7+mFOjDTvncgdErL14JbTXLFQ6vhqxk08a8sdCAxdiX+IJ4fy7jJW3TNqmH3dpE1OfKQe+CwKaksF0wjjXu4O+xj4BWv5a0V3ePOnGD9EVze3HZWkjUGmysGNjW6IayHydIDt1JB9Q6d+pMARQrZ6R4b6ySJ21vv7FwaIZ65kHxT/UMk9fbffhLxV0Dj3s5HKbwZoZU5HhAhj74zcptjer72YygdFs1uf8h5FIrmYAXgYuDfVN76nAUls2PC/jE79xtNxLxP045VerWZVg2fXZRKgqw++Wa5sd0IYmm++SVNV4I/VGSmLmTuxe5oWMPs4FtE78EQkkNYzch3cghxJjsgZiP/KMXlrtEfhInxU3YNc= hector@hector"
+      sudoers: "ALL=(ALL) NOPASSWD:ALL"
+  timezone: America/Lima
