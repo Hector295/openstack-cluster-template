@@ -203,12 +203,68 @@ cluster:
         node: node-2
         disks: ["/dev/vdb"]
       ---
+      apiVersion: "openebs.io/v1beta2"
+      kind: DiskPool
+      metadata:
+        name: pool-on-hp
+        namespace: openebs
+      spec:
+        node: server-hector
+        disks: ["/dev/vg-root/lv-docker"]
+      ---
+      apiVersion: "openebs.io/v1beta2"
+      kind: DiskPool
+      metadata:
+        name: pool-on-dell
+        namespace: openebs
+      spec:
+        node: server-dell41
+        disks: ["/dev/vg-root/lv-var-tmp"]
+      ---
       apiVersion: catalog.cattle.io/v1
       kind: ClusterRepo
       metadata:
         name: extra-charts
       spec:
         gitRepo: https://github.com/Hector295/rancher-extra-charts.git
+      ---
+      apiVersion: kubevirt.io/v1
+      kind: VirtualMachine
+      metadata:
+        name: testvm
+      spec:
+        runStrategy: Halted
+        template:
+          metadata:
+            labels:
+              kubevirt.io/size: small
+              kubevirt.io/domain: testvm
+          spec:
+            domain:
+              devices:
+                disks:
+                  - name: containerdisk
+                    disk:
+                      bus: virtio
+                  - name: cloudinitdisk
+                    disk:
+                      bus: virtio
+                interfaces:
+                - name: default
+                  masquerade: {}
+              resources:
+                requests:
+                  memory: 64M
+            networks:
+            - name: default
+              pod: {}
+            volumes:
+              - name: containerdisk
+                containerDisk:
+                  image: quay.io/kubevirt/cirros-container-disk-demo
+              - name: cloudinitdisk
+                cloudInitNoCloud:
+                  userDataBase64: SGkuXG4=
     kubernetesVersion: v1.29.9+rke2r1
   name: cluster-rke2
   localClusterAuthEndpoint:
@@ -270,13 +326,15 @@ nodepools:
         - echo "nvme_tcp" | sudo tee -a /etc/modules
         - echo 1024 | sudo tee /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
         - echo "vm.nr_hugepages = 1024" | sudo tee -a /etc/sysctl.conf
-        - echo "fs.inotify.max_user_watches=524288" >> /etc/sysctl.conf
-        - echo "fs.inotify.max_user_instances=1024" >> /etc/sysctl.conf
-        - echo "fs.inotify.max_queued_events=16384" >> /etc/sysctl.conf
-        - sysctl -p
+        - echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
+        - echo "fs.inotify.max_user_instances=1024" | sudo tee -a /etc/sysctl.conf
+        - echo "fs.inotify.max_queued_events=16384" | sudo tee -a /etc/sysctl.conf
+        - sudo sysctl -p
         - sudo systemctl disable --now unattended-upgrades
         - sudo sed -i 's/^APT::Periodic::Update-Package-Lists "1"/APT::Periodic::Update-Package-Lists "0"/' /etc/apt/apt.conf.d/20auto-upgrades
         - sudo sed -i 's/^APT::Periodic::Unattended-Upgrade "1"/APT::Periodic::Unattended-Upgrade "0"/' /etc/apt/apt.conf.d/20auto-upgrades
+        - wget https://github.com/kubevirt/kubevirt/releases/download/v0.60.0-alpha.0/virtctl-v0.60.0-alpha.0-linux-amd64 -O virtctl && chmod +x virtctl && sudo mv virtctl /usr/local/bin/virtctl
+        - echo 'export KUBECONFIG=/etc/rancher/rke2/rke2.yaml' >> ~/.bashrc
     username: hventura
     worker: true
     allowedAddressPairs:

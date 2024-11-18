@@ -1,0 +1,43 @@
+apiVersion: baremetal.whitestack.com/v1
+kind: BaremetalServer
+metadata:
+  name: server-hp152-{{ .Values.cluster.name }}
+spec:
+  clusterKind: WhiteCruiser
+  serverSelector: whitecruiser-hector-{{ .Values.cluster.name }}
+  hostname: hector-tests
+  softwareManagement:
+    user: whitestack
+    address: 10.100.2.152
+    password: "whitestack"
+  hardwareManagement:
+    type: ilo
+    address: 10.100.2.52
+    user: whitestack
+    password: whitestack
+  rawNetplan: 
+    network:
+      ethernets:
+        eno1:
+          match:
+            macaddress: b4:7a:f1:2d:0a:78
+            name: eno1*
+          dhcp4: no
+          addresses:
+            - 10.100.2.152/24
+          routes:
+          - to: default
+            via: 10.100.2.1
+          nameservers:
+            addresses:
+              - 8.8.8.8
+              - 4.4.4.4
+        eno2:
+          dhcp4: true
+          match:
+            macaddress: b4:7a:f1:2d:0a:79
+            name: eno2*
+      version: 2
+  role: dell41-{{ .Values.cluster.name }}
+  clusterRoles:
+    - worker
