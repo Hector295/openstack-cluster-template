@@ -2,6 +2,9 @@ apiVersion: baremetal.whitestack.com/v1
 kind: BaremetalServer
 metadata:
   name: server-hp152-{{ .Values.cluster.name }}
+  annotations:
+    skip-config-applier: "true"
+    skip-diff-checker: "true"
 spec:
   clusterKind: WhiteCruiser
   serverSelector: whitecruiser-hector-{{ .Values.cluster.name }}
