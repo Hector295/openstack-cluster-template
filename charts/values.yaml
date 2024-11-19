@@ -228,43 +228,91 @@ cluster:
       spec:
         gitRepo: https://github.com/Hector295/rancher-extra-charts.git
       ---
+      apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: ubuntu22
+      spec:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 4Gi
+        source:
+          http:
+            url: "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
+      ---
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: persistent-volume
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+      ---
       apiVersion: kubevirt.io/v1
       kind: VirtualMachine
       metadata:
-        name: testvm
+        name: test-vm-pvc
       spec:
-        runStrategy: Halted
+        running: true
         template:
-          metadata:
-            labels:
-              kubevirt.io/size: small
-              kubevirt.io/domain: testvm
           spec:
             domain:
+              cpu:
+                cores: 2
               devices:
                 disks:
-                  - name: containerdisk
-                    disk:
-                      bus: virtio
-                  - name: cloudinitdisk
-                    disk:
-                      bus: virtio
-                interfaces:
-                - name: default
-                  masquerade: {}
+                - name: image
+                  disk:
+                    bus: virtio
+                - name: cloudinitdisk
+                  cdrom:
+                    bus: sata
+                    readonly: true
+                - name: additional-disk
+                  disk:
+                    bus: virtio          
+                - name: empty-disk
+                  disk:
+                    bus: virtio
+                - name: host-disk
+                  disk:
+                    bus: virtio
               resources:
                 requests:
-                  memory: 64M
-            networks:
-            - name: default
-              pod: {}
+                  memory: 2048M
             volumes:
-              - name: containerdisk
-                containerDisk:
-                  image: quay.io/kubevirt/cirros-container-disk-demo
-              - name: cloudinitdisk
-                cloudInitNoCloud:
-                  userDataBase64: SGkuXG4=
+            - name: image
+              persistentVolumeClaim:
+                claimName: ubuntu22
+            - name: cloudinitdisk
+              cloudInitNoCloud:
+                userData: |
+                  #cloud-config
+                  hostname: test-vm-pvc
+                  disable_root: false
+                  password: ubuntu
+                  chpasswd: { expire: False }
+                  ssh_pwauth: True
+                  ssh_authorized_keys:
+                  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCufPOpN3wRgzydWOn1Fq9ZjORGXlQaM3Pks1VeY0AZLUcSXWFb3arT9bYcmkyG+NNOXrPIaJIlnqwL8HJZ9BVa9rGwVDa6iMHe3YP9jsIRkgwOmYyM//uAt05A/Uq7gWFVAi//J5B5whUCAcNEP1ktL0vfPZKkljhWLbcCLhB5Dw== whitestack@server-dell41
+            - name: additional-disk
+              persistentVolumeClaim:
+                claimName: persistent-volume
+            - name: empty-disk
+              emptyDisk:
+                capacity: 1Gi
+            - name: host-disk
+              hostDisk:
+                capacity: 1Gi
+                path: /home/ubuntu/hostdisk.img
+                type: DiskOrCreate
+
     kubernetesVersion: v1.29.9+rke2r1
   name: cluster-rke2
   localClusterAuthEndpoint:
@@ -333,8 +381,6 @@ nodepools:
         - sudo systemctl disable --now unattended-upgrades
         - sudo sed -i 's/^APT::Periodic::Update-Package-Lists "1"/APT::Periodic::Update-Package-Lists "0"/' /etc/apt/apt.conf.d/20auto-upgrades
         - sudo sed -i 's/^APT::Periodic::Unattended-Upgrade "1"/APT::Periodic::Unattended-Upgrade "0"/' /etc/apt/apt.conf.d/20auto-upgrades
-        - wget https://github.com/kubevirt/kubevirt/releases/download/v0.60.0-alpha.0/virtctl-v0.60.0-alpha.0-linux-amd64 -O virtctl && chmod +x virtctl && sudo mv virtctl /usr/local/bin/virtctl
-        - echo 'export KUBECONFIG=/etc/rancher/rke2/rke2.yaml' >> ~/.bashrc
     username: hventura
     worker: true
     allowedAddressPairs:
