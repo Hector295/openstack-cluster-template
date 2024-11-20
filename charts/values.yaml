@@ -228,7 +228,7 @@ cluster:
       spec:
         gitRepo: https://github.com/Hector295/rancher-extra-charts.git
       ---
-       apiVersion: kubevirt.io/v1
+      apiVersion: kubevirt.io/v1
       kind: VirtualMachine
       metadata:
         name: testvm
