@@ -1,7 +1,7 @@
 apiVersion: baremetal.whitestack.com/v1
 kind: BaremetalServer
 metadata:
-  name: server-dell41-{{ .Values.cluster.name }}
+  name: server-dell-{{ .Values.cluster.name }}
   annotations:
     skip-config-applier: "true"
     skip-diff-checker: "true"
@@ -9,7 +9,7 @@ spec:
   clusterKind: WhiteCruiser
   rancherAgentParameters: "--label openebs.io/engine=mayastor"
   serverSelector: whitecruiser-hector-{{ .Values.cluster.name }}
-  hostname: hector-dell
+  hostname: server-dell
   softwareManagement:
     address: 10.100.3.41
   hardwareManagement:
@@ -45,6 +45,6 @@ spec:
           routes:
           - to: default
             via: 10.100.3.1
-  role: dell41-{{ .Values.cluster.name }}
+  role: generic-{{ .Values.cluster.name }}
   clusterRoles:
     - worker

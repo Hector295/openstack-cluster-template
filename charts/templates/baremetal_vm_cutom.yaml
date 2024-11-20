@@ -42,6 +42,6 @@ spec:
             macaddress: b4:7a:f1:2d:0a:79
             name: eno2*
       version: 2
-  role: dell41-{{ .Values.cluster.name }}
+  role: generic-{{ .Values.cluster.name }}
   clusterRoles:
     - worker

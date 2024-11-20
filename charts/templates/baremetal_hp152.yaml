@@ -1,7 +1,7 @@
 apiVersion: baremetal.whitestack.com/v1
 kind: BaremetalServer
 metadata:
-  name: server-hp152-{{ .Values.cluster.name }}
+  name: server-hp-{{ .Values.cluster.name }}
   annotations:
     skip-config-applier: "true"
     skip-diff-checker: "true"
@@ -9,7 +9,7 @@ spec:
   clusterKind: WhiteCruiser
   rancherAgentParameters: "--label openebs.io/engine=mayastor"
   serverSelector: whitecruiser-hector-{{ .Values.cluster.name }}
-  hostname: hector-tests
+  hostname: server-hp
   softwareManagement:
     user: whitestack
     address: 10.100.2.152
@@ -42,6 +42,6 @@ spec:
             macaddress: b4:7a:f1:2d:0a:79
             name: eno2*
       version: 2
-  role: dell41-{{ .Values.cluster.name }}
+  role: generic-{{ .Values.cluster.name }}
   clusterRoles:
     - worker

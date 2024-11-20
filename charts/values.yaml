@@ -209,7 +209,7 @@ cluster:
         name: pool-on-hp
         namespace: openebs
       spec:
-        node: server-hector
+        node: server-hp
         disks: ["/dev/vg-root/lv-docker"]
       ---
       apiVersion: "openebs.io/v1beta2"
@@ -218,7 +218,7 @@ cluster:
         name: pool-on-dell
         namespace: openebs
       spec:
-        node: server-dell41
+        node: server-dell
         disks: ["/dev/vg-root/lv-var-tmp"]
       ---
       apiVersion: catalog.cattle.io/v1

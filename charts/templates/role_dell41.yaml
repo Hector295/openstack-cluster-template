@@ -1,7 +1,7 @@
 apiVersion: baremetal.whitestack.com/v1
 kind: ServerRole
 metadata:
-  name: dell41-{{ .Values.cluster.name }}
+  name: generic-{{ .Values.cluster.name }}
 spec:
   storage:
   - vg_name: vg-root
