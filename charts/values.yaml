@@ -179,28 +179,10 @@ cluster:
       apiVersion: "openebs.io/v1beta2"
       kind: DiskPool
       metadata:
-        name: pool-on-node-0
+        name: pool-on-nodo-vm-custom
         namespace: openebs
       spec:
-        node: node-0
-        disks: ["/dev/vdb"]
-      ---
-      apiVersion: "openebs.io/v1beta2"
-      kind: DiskPool
-      metadata:
-        name: pool-on-node-1
-        namespace: openebs
-      spec:
-        node: node-1
-        disks: ["/dev/vdb"]
-      ---
-      apiVersion: "openebs.io/v1beta2"
-      kind: DiskPool
-      metadata:
-        name: pool-on-node-2
-        namespace: openebs
-      spec:
-        node: node-2
+        node: nodo-vm-custom
         disks: ["/dev/vdb"]
       ---
       apiVersion: "openebs.io/v1beta2"
@@ -227,44 +209,6 @@ cluster:
         name: extra-charts
       spec:
         gitRepo: https://github.com/Hector295/rancher-extra-charts.git
-      ---
-      apiVersion: kubevirt.io/v1
-      kind: VirtualMachine
-      metadata:
-        name: testvm
-      spec:
-        running: true
-        template:
-          metadata:
-            labels:
-              kubevirt.io/size: small
-              kubevirt.io/domain: testvm
-          spec:
-            domain:
-              devices:
-                disks:
-                  - name: containerdisk
-                    disk:
-                      bus: virtio
-                  - name: cloudinitdisk
-                    disk:
-                      bus: virtio
-                interfaces:
-                - name: default
-                  masquerade: {}
-              resources:
-                requests:
-                  memory: 64M
-            networks:
-            - name: default
-              pod: {}
-            volumes:
-              - name: containerdisk
-                containerDisk:
-                  image: quay.io/kubevirt/cirros-container-disk-demo
-              - name: cloudinitdisk
-                cloudInitNoCloud:
-                  userDataBase64: SGkuXG4=
     kubernetesVersion: v1.29.9+rke2r1
   name: cluster-rke2
   localClusterAuthEndpoint:
@@ -309,7 +253,7 @@ nodepools:
       xr7E4tY38H1hlX4jUa1vQznKCZwyXeldPp0NqMpJQmQeotGHGWArETQDBVKa3mht
       H0EQ78ThFuF+3PVnNBCHxofdhPwQumnJh7BTyMyeqY2swZ2DSuOU
       -----END RSA PRIVATE KEY-----
-    quantity: 3
+    quantity: 1
     region: RegionOne
     secGroups: default
     sshPort: 22
@@ -334,7 +278,7 @@ nodepools:
         - sudo sed -i 's/^APT::Periodic::Update-Package-Lists "1"/APT::Periodic::Update-Package-Lists "0"/' /etc/apt/apt.conf.d/20auto-upgrades
         - sudo sed -i 's/^APT::Periodic::Unattended-Upgrade "1"/APT::Periodic::Unattended-Upgrade "0"/' /etc/apt/apt.conf.d/20auto-upgrades
     username: hventura
-    worker: true
+    worker: false
     allowedAddressPairs:
       - 10.100.18.80:PUBLIC
     configDrive: true
