@@ -20,6 +20,15 @@ addons:
                 - fluentd-forward
               match:
                 - select: {}
+        fluentd:
+          bufferStorageVolume:
+            pvc:
+              spec:
+               accessModes:
+                 - ReadWriteOnce
+               resources:
+                 requests:
+                   storage: 5Gi
         clusterOutputs:
           - name: fluentd-forward
             spec:
