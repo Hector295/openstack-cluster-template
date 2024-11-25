@@ -188,7 +188,7 @@ cluster:
       apiVersion: "openebs.io/v1beta2"
       kind: DiskPool
       metadata:
-        name: pool-on-nodo-vm-custom
+        name: pool-on-nodo-vm-1
         namespace: openebs
       spec:
         node: custom-node-1
@@ -206,11 +206,11 @@ cluster:
       apiVersion: "openebs.io/v1beta2"
       kind: DiskPool
       metadata:
-        name: pool-on-nuc
+        name: pool-on-nodo-vm-2
         namespace: openebs
       spec:
-        node: nuc-003
-        disks: ["/dev/sda1"]
+        node: custom-node-2
+        disks: ["/dev/vdb"]
       ---
       apiVersion: catalog.cattle.io/v1
       kind: ClusterRepo
