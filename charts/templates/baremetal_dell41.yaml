@@ -1,7 +1,7 @@
 apiVersion: baremetal.whitestack.com/v1
 kind: BaremetalServer
 metadata:
-  name: server-dell-{{ .Values.cluster.name }}
+  name: nuc-003-{{ .Values.cluster.name }}
   annotations:
     skip-config-applier: "true"
     skip-diff-checker: "true"
@@ -9,9 +9,9 @@ spec:
   clusterKind: WhiteCruiser
   rancherAgentParameters: "--label openebs.io/engine=mayastor"
   serverSelector: whitecruiser-hector-{{ .Values.cluster.name }}
-  hostname: server-dell
+  hostname: nuc-003
   softwareManagement:
-    address: 10.100.3.41
+    address: 10.100.2.100
   hardwareManagement:
     type: idrac
     address: 10.100.2.41

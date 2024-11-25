@@ -1,7 +1,7 @@
 apiVersion: baremetal.whitestack.com/v1
 kind: BaremetalServer
 metadata:
-  name: server-custom1-{{ .Values.cluster.name }}
+  name: server-custom2-{{ .Values.cluster.name }}
   annotations:
     skip-config-applier: "true"
     skip-diff-checker: "true"
@@ -9,10 +9,10 @@ spec:
   clusterKind: WhiteCruiser
   rancherAgentParameters: "--label openebs.io/engine=mayastor"
   serverSelector: whitecruiser-hector-{{ .Values.cluster.name }}
-  hostname: custom-node-1
+  hostname: custom-node-2
   softwareManagement:
     user: whitestack
-    address: 10.100.20.58
+    address: 10.100.17.239
     password: "whitestack"
   hardwareManagement:
     type: ilo
