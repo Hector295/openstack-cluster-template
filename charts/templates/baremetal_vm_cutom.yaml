@@ -12,7 +12,7 @@ spec:
   hostname: custom-node-1
   softwareManagement:
     user: whitestack
-    address: 10.100.17.154
+    address: 10.100.20.56
     password: "whitestack"
   hardwareManagement:
     type: ilo
