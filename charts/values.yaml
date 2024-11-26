@@ -188,7 +188,7 @@ cluster:
       apiVersion: "openebs.io/v1beta2"
       kind: DiskPool
       metadata:
-        name: pool-on-nodo-vm-1
+        name: pool-on-custom1
         namespace: openebs
       spec:
         node: custom-node-1
@@ -206,7 +206,7 @@ cluster:
       apiVersion: "openebs.io/v1beta2"
       kind: DiskPool
       metadata:
-        name: pool-on-nodo-vm-2
+        name: pool-on-custom2
         namespace: openebs
       spec:
         node: custom-node-2
