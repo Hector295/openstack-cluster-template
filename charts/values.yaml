@@ -67,6 +67,10 @@ addons:
         thanosService:
           enabled: true
         prometheusSpec:
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
           externalLabels:
             k8s_cluster: cluster-rke2
           thanos:
