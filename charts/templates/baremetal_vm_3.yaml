@@ -1,7 +1,7 @@
 apiVersion: baremetal.whitestack.com/v1
 kind: BaremetalServer
 metadata:
-  name: server-vm2-{{ .Values.cluster.name }}
+  name: server-vm3-{{ .Values.cluster.name }}
   annotations:
     skip-config-applier: "true"
     skip-diff-checker: "true"
