@@ -1,126 +1,24 @@
 addons:
-  kubevirt:
-    enabled: true
-  logging:
-    enabled: true
-    values: |-
-      rke2:
-        enabled: true
-      logging:
-        enableRecreateWorkloadOnImmutableFieldChange: true
-        enabled: true
-        clusterFlows:
-          - name: all-logs
-            spec:
-              filters:
-                - record_modifier:
-                    records:
-                      - cluster-name: cluster-rke2
-              globalOutputRefs:
-                - fluentd-forward
-              match:
-                - select: {}
-        fluentd:
-          bufferStorageVolume:
-            pvc:
-              spec:
-               accessModes:
-                 - ReadWriteOnce
-               resources:
-                 requests:
-                   storage: 5Gi
-        clusterOutputs:
-          - name: fluentd-forward
-            spec:
-              forward:
-                buffer:
-                  flush_interval: 10s
-                  retry_forever: false
-                  retry_max_interval: '30'
-                  type: file
-                compress: gzip
-                require_ack_response: false
-                servers:
-                  - host: 10.100.18.5
-                    port: 24224
-                tls_insecure_mode: true
-      hostTailer:
-        enabled: true
-        fileTailers:
-          - name: syslog
-            path: /var/log/syslog
-  longhorn:
-    enabled: false
   metallb:
     enabled: true
     values: |-
       speaker:
-        ignoreExcludeLB: true
-    version: 0.14.5
-  monitoring:
-    enabled: true
-    version: 104.1.0+up57.0.3
-    values: |-
-      alertmanager:
         enabled: false
-      prometheus:
-        thanosService:
-          enabled: true
-        prometheusSpec:
-          tolerations:
-            - key: "node-role.kubernetes.io/control-plane"
-              operator: "Exists"
-              effect: "NoSchedule"
-          externalLabels:
-            k8s_cluster: cluster-rke2
-          thanos:
-            objstoreConfig:
-              config:
-                access_key: 4AYApsWxJV5pd81dWoqD
-                bucket: rke2
-                endpoint: 10.100.17.27:9000
-                insecure: true
-                secret_key: xmCh6780sHw93t54dPPfOLKrCAu0vpMp7U821cEQ
-              type: S3
-        thanosIngress:
-          annotations:
-            nginx.ingress.kubernetes.io/backend-protocol: GRPC
-            nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
-            nginx.ingress.kubernetes.io/grpc-backend: 'true'
-            nginx.ingress.kubernetes.io/protocol: h2c
-            nginx.ingress.kubernetes.io/proxy-read-timeout: '160'
-          enabled: true
-          hosts:
-            - thanos.rke2.external.whitestack.com
-          labels: {}
-          nodePort: 30901
-          paths:
-            - /
-          servicePort: 10901
-          tls: null
-          pathType: ImplementationSpecific
-  openebs:
-    enabled: true
-    values: |-
-      openebs-crds:
-        csi:
-          volumeSnapshots:
-            enabled: false
-      mayastor:
-        storageClass:
-          enabled: true
-          nameSuffix: multiple-replica
-          default: true
-          allowVolumeExpansion: true
-          parameters:
-            protocol: nvmf
-            repl: 3
-    version: 4.1.1
-cloudprovider: openstack
+    version: 0.14.5
+#cloudprovider: openstack
 cluster:
   config:
     chartValues:
-      rke2-calico: {}
+      rke2-calico:
+        installation:
+          calicoNetwork:
+            bgp: Enabled
+            ipPools:
+              - cidr: 10.42.0.0/16
+                disableBGPExport: true
+                encapsulation: IPIP
+                natOutgoing: Enabled
+                nodeSelector: all()
     enableNetworkPolicy: false
     globalConfig:
       cloud_provider_name: ''
@@ -160,139 +58,18 @@ cluster:
         namespace: metallb-system
       spec:
         addresses:
-        - 10.100.18.80/32
+        - 30.100.16.0/21
         autoAssign: true
-      ---
-      apiVersion: metallb.io/v1beta1
-      kind: L2Advertisement
-      metadata:
-        name: l2advertisement
-        namespace: metallb-system
-      spec:
-        ipAddressPools:
-        - defaultpool
-      ---
-      apiVersion: helm.cattle.io/v1
-      kind: HelmChartConfig
-      metadata:
-        name: rke2-ingress-nginx
-        namespace: kube-system
-      spec:
-        valuesContent: |-
-          controller:
-            service:
-              enabled: true
-              type: LoadBalancer
-              externalTrafficPolicy: Cluster
-            publishService:
-              enabled: true
-            hostPort:
-              enabled: false
-      ---
-      apiVersion: "openebs.io/v1beta2"
-      kind: DiskPool
-      metadata:
-        name: pool-on-custom1
-        namespace: openebs
-      spec:
-        node: custom-node-1
-        disks: ["/dev/vdb"]
-      ---
-      apiVersion: "openebs.io/v1beta2"
-      kind: DiskPool
-      metadata:
-        name: pool-on-hp
-        namespace: openebs
-      spec:
-        node: server-hp
-        disks: ["/dev/vg-root/lv-docker"]
-      ---
-      apiVersion: "openebs.io/v1beta2"
-      kind: DiskPool
-      metadata:
-        name: pool-on-custom2
-        namespace: openebs
-      spec:
-        node: custom-node-2
-        disks: ["/dev/vdb"]
       ---
       apiVersion: catalog.cattle.io/v1
       kind: ClusterRepo
       metadata:
         name: extra-charts
       spec:
-        gitRepo: https://github.com/Hector295/rancher-extra-charts.git
-    kubernetesVersion: v1.29.9+rke2r1
-  name: cluster-rke2
+        gitRepo: https://github.com/Hector295/marketplace-ws.git
+        gitBranch: demo/bgp
+    kubernetesVersion: v1.30.9+rke2r1
+  name: cluster-bgp
   localClusterAuthEndpoint:
     enabled: false
-nodepools:
-  - authUrl: http://10.100.1.22:5000
-    controlplane: true
-    domainName: Default
-    etcd: true
-    flavorName: m1.8vcpu.16ram.160disk.80eph.10swap
-    imageName: Ubuntu 22.04 LTS
-    keypairName: whitecruiser
-    labels:
-      openebs.io/engine: mayastor
-    name: node
-    netName: PUBLIC
-    privateKeyFile: |
-      -----BEGIN RSA PRIVATE KEY-----
-      MIIEowIBAAKCAQEA0cWzjjgGMqsTZk2oOxKGvJuZfqquvlv6nRrjpvjK77uV5Q6A
-      5F9BKU2BRxkOAQgYNmgDVVjnb7L4FU/gC8LvRPweOQltpcmf3fkXSfhoBcqFzviG
-      sLrl842ltlM4XtjvIYyVXU7QO8wYASR/Aow++0ZAM41qpzQTN3OGb4Ok6NYhW7Ln
-      o6zTUpmDGqeyJjoRECBHaMnuLoEjmpxkWAsoC3EeI9wqVwMsHh09YWN2Z6cnaiQY
-      nL+KbbXWQAKsErwJVpJVsQK7rLG+8hmncj1375bMmuAP/yvKngFqaLbYwUrTSdSk
-      PyXM50oPOiD9oQboDcV/CfWTdM4mgA5NguJI0QIDAQABAoIBAEIFKNevxjOYKAjg
-      k/vTfthJWGvHKCv9IsjjN5bLYoNE1I48nFBDsmxfWjqYJhIpDAXDgpkP2/cJqo56
-      jxbkiQ17E7/7uaid5lSkGrJLHeIEtUxIZ4ujps+aWvchBfLD767tYez16w+G0l85
-      r0eMAB5xI6+V6GUrPIkNMNhT5Ejq2Vb34KIr3cXEmDr3KGCEyXIJmxy3/SmOdw1V
-      MpDSkF0qo2Y+CpLIE7kM+qu4uYv30PpLneY3EyXIpXIS+cN6zo+o42BnGRsTu6SA
-      gnU5zQWEFntG2aygY68d0wRG6Nzz0gqv9sqoFCxiEhW7CTyB5PGvwKBemDHoaz2/
-      0UJ0EOECgYEA+gVFaybXvY0LzLpwHk7lPFFHfYbSEEDOtsUx0V5oPJ/lySLWoQHk
-      LZHk1O3uAD3z7p7iMd5cWs0AHVPo4Djc5Oq9upiMIG53WuWHH5jSO4uGTru6X7nN
-      C7LagI+7Ds2di8qaEm4/JVOTQj/4hcag6Wu8ijc8dzxFzxwKVbtD9m0CgYEA1soD
-      cnu74+57cVLYVvRJELuIRfG3mf5VQbfywSuqZsTlD3BcIkgnxoIVdevVT/n5KVPs
-      +rQZPwHlBRIGb7PJORfPs+1qDVPdBb5UCgZLtSN8ZcBmVzy7G8NK1KwauqNEPZxy
-      B93fZV5EXFUrlXkA7AuysUDZBpGjwa5MNxmXrXUCgYB4wTT/BLqsZUQutFlUehyD
-      nmod+ZDZosN0SRe/nI5RwZS1KatqBkTTsaRJJ0WNPl7jgD+VgGUwwdRtVcqjCTO/
-      KJVMW0NKoq/o6fTyUNgxRDkxK8BfXZjoLpEUCNd61dpi2w7BGhhLiesU01rQGdg8
-      BPoB852zpRu+ZTekopa3nQKBgQCxTXMJBxDzt4JY6q1BIkhKMrPsIPuRd/xC0qjm
-      QrhYO0Jmuzai6fNDj1BN1k5wxYWjUu81iIOqmlLGG7oKbVu28Gv5OAsqU0cJHbLb
-      z5ShQ1jF2cvhSXWfFlfoNOWfmXSUc1dCHSny0J0XpwriSU+0ineIkGJWZNTL5ahu
-      d4bYnQKBgBvSjE+AKRWMpOhBZupEW9ehyh8g+Jl2g37DDz/A7CdKNjBoZSOAmzj/
-      xr7E4tY38H1hlX4jUa1vQznKCZwyXeldPp0NqMpJQmQeotGHGWArETQDBVKa3mht
-      H0EQ78ThFuF+3PVnNBCHxofdhPwQumnJh7BTyMyeqY2swZ2DSuOU
-      -----END RSA PRIVATE KEY-----
-    quantity: 1
-    region: RegionOne
-    secGroups: default
-    sshPort: 22
-    sshUser: ubuntu
-    tenantName: hventura
-    userDataFile: |
-      #cloud-config
-      package_update: true
-      package_upgrade: true
-      runcmd:
-        - sudo apt-get update
-        - sudo apt-get install -y linux-modules-extra-$(uname -r)
-        - sudo modprobe nvme_tcp
-        - echo "nvme_tcp" | sudo tee -a /etc/modules
-        - echo 1024 | sudo tee /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
-        - echo "vm.nr_hugepages = 1024" | sudo tee -a /etc/sysctl.conf
-        - echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
-        - echo "fs.inotify.max_user_instances=1024" | sudo tee -a /etc/sysctl.conf
-        - echo "fs.inotify.max_queued_events=16384" | sudo tee -a /etc/sysctl.conf
-        - sudo sysctl -p
-        - sudo systemctl disable --now unattended-upgrades
-        - sudo sed -i 's/^APT::Periodic::Update-Package-Lists "1"/APT::Periodic::Update-Package-Lists "0"/' /etc/apt/apt.conf.d/20auto-upgrades
-        - sudo sed -i 's/^APT::Periodic::Unattended-Upgrade "1"/APT::Periodic::Unattended-Upgrade "0"/' /etc/apt/apt.conf.d/20auto-upgrades
-    username: hventura
-    worker: false
-    allowedAddressPairs:
-      - 10.100.18.80:PUBLIC
-    configDrive: true
-cloudCredentialSecretName: cattle-global-data:cc-ws478
+cloudCredentialSecretName: cattle-global-data:cc-7msdp

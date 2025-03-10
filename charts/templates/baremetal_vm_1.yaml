@@ -8,11 +8,11 @@ metadata:
 spec:
   clusterKind: WhiteCruiser
   serverSelector: whitecruiser-hector-{{ .Values.cluster.name }}
-  hostname: vm1
+  hostname: vm-1
   softwareManagement:
-    user: whitestack
-    address: 10.100.10.237
-    password: "whitestack"
+    user: ubuntu
+    address: 10.100.17.177
+    password: "ubuntu"
   hardwareManagement:
     type: ilo
     address: 10.100.2.52
@@ -43,4 +43,4 @@ spec:
       version: 2
   role: generic-{{ .Values.cluster.name }}
   clusterRoles:
-    - worker
+    - controlplane

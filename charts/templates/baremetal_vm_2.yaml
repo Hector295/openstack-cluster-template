@@ -10,9 +10,9 @@ spec:
   serverSelector: whitecruiser-hector-{{ .Values.cluster.name }}
   hostname: vm-2
   softwareManagement:
-    user: whitestack
-    address: 10.100.9.250
-    password: "whitestack"
+    user: ubuntu
+    address: 10.100.17.29
+    password: "ubuntu"
   hardwareManagement:
     type: ilo
     address: 10.100.2.52

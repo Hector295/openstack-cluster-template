@@ -22,16 +22,16 @@ questions:
   - openstack
   group: "General"
 - variable: cluster.config.kubernetesVersion
-  default: v1.30.4+rke2r1
+  default: v1.30.9+rke2r1
   description: "Specify Kubernetes version"
   label: "Kubernetes Version"
   type: enum
   required: true
   options:
-  - v1.30.4+rke2r1
-  - v1.29.8+rke2r1
-  - v1.28.13+rke2r1
-  - v1.27.16+rke2r2
+  - v1.31.5+rke2r1
+  - v1.30.9+rke2r1
+  - v1.29.13+rke2r1
+  - v1.28.15+rke2r1
   group: "General"
 - variable: cluster.config.additionalManifests
   default:
@@ -59,26 +59,6 @@ questions:
     description: "Local auth access endpoint CACerts"
     type: multiline
     group: "Auth Access Endpoint"
-- variable: addons.monitoring.enabled
-  default: false
-  label: "Enable monitoring"
-  description: "Enable monitoring"
-  type: boolean
-  group: "Monitoring"
-  show_subquestion_if: true
-  subquestions:
-  - variable: addons.monitoring.version
-    default:
-    label: "Monitoring Version"
-    description: "Choose chart version of monitoring. If empty latest version will be installed"
-    type: string
-    group: "Monitoring"
-  - variable: addons.monitoring.values
-    default:
-    label: "Monitoring Values"
-    description: "Custom monitoring chart values"
-    type: multiline
-    group: "Monitoring"
 - variable: addons.metallb.enabled
   default: false
   label: 'Enable MetalLB'
@@ -100,47 +80,6 @@ questions:
       description: 'Custom metallb chart values'
       type: multiline
       group: 'MetalLB'
-- variable: addons.openebs.enabled
-  default: false
-  label: 'Enable OpenEBS'
-  description: 'Enable OpenEBS'
-  type: boolean
-  group: 'OpenEBS'
-  show_subquestion_if: true
-  subquestions:
-    - variable: addons.openebs.version
-      default: "4.1.1"
-      label: 'OpenEBS Version'
-      description: 'Only version 0.14.5 is available'
-      type: string
-      read_only: true
-      group: 'OpenEBS'
-    - variable: addons.openebs.values
-      default:
-      label: 'OpenEBS Values'
-      description: 'Custom openebs chart values'
-      type: multiline
-      group: 'OpenEBS'
-- variable: addons.logging.enabled
-  default: false
-  label: 'Enable Rancher Logging'
-  description: 'Enable Rancher Logging'
-  type: boolean
-  group: 'Logging'
-  show_subquestion_if: true
-  subquestions:
-    - variable: addons.logging.values
-      default:
-      label: 'Rancher Logging Values'
-      description: 'Custom logging chart values'
-      type: multiline
-      group: 'Logging'
-- variable: addons.kubevirt.enabled
-  default: false
-  label: 'Enable KubeVirt'
-  description: 'Enable KubeVirt'
-  type: boolean
-  group: 'KubeVirt'
 - variable: nodepools.0.name
   default:
   description: "Specify nodepool name"
