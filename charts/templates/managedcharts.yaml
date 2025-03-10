@@ -1,61 +1,3 @@
-{{- if .Values.addons.monitoring }}
-{{- if .Values.addons.monitoring.enabled }}
-apiVersion: management.cattle.io/v3
-kind: ManagedChart
-metadata:
-  name: monitoring-crd-{{ .Values.cluster.name }}
-  namespace: fleet-default
-spec:
-  chart: "rancher-monitoring-crd"
-  repoName: "whitecruiser-principal"
-  releaseName: "rancher-monitoring-crd"
-  version: {{ .Values.addons.monitoring.version }}
-  {{- if .Values.addons.monitoring.values }}
-  values:
-{{ toYaml (fromYaml .Values.addons.monitoring.values) | indent 4 }}
-  {{- end }}
-  defaultNamespace: "cattle-monitoring-system"
-  targets:
-  - clusterName: {{ .Values.cluster.name }}
----
-apiVersion: management.cattle.io/v3
-kind: ManagedChart
-metadata:
-  name: monitoring-{{ .Values.cluster.name }}
-  namespace: fleet-default
-spec:
-  chart: "rancher-monitoring"
-  repoName: "whitecruiser-principal"
-  releaseName: "rancher-monitoring"
-  version: {{ .Values.addons.monitoring.version }}
-  {{- if .Values.addons.monitoring.values }}
-  values:
-{{ toYaml (fromYaml .Values.addons.monitoring.values) | indent 4 }}
-  {{- end }}
-  defaultNamespace: "cattle-monitoring-system"
-  targets:
-  - clusterName: {{ .Values.cluster.name }}
-  diff:
-    comparePatches:
-    - apiVersion: admissionregistration.k8s.io/v1beta1
-      kind: MutatingWebhookConfiguration
-      name: rancher-monitoring-admission
-      jsonPointers:
-      - /webhooks/0/failurePolicy
-    - apiVersion: admissionregistration.k8s.io/v1beta1
-      kind: ValidatingWebhookConfiguration
-      name: rancher-monitoring-admission
-      jsonPointers:
-      - /webhooks/0/failurePolicy
-    - apiVersion: monitoring.coreos.com/v1
-      kind: ServiceMonitor
-      name: rancher-monitoring-kubelet
-      namespace: kube-system
-      jsonPointers:
-      - /spec/endpoints
----
-{{- end }}
-{{- end }}
 {{- if .Values.addons.metallb }}
 {{- if .Values.addons.metallb.enabled }}
 apiVersion: management.cattle.io/v3
@@ -65,7 +7,7 @@ metadata:
   namespace: fleet-default
 spec:
   chart: "metallb"
-  repoName: "whitecruiser-apps"
+  repoName: "extra-charts"
   releaseName: "metallb"
   version: 0.14.5
   {{- if .Values.addons.metallb.values }}
@@ -73,90 +15,6 @@ spec:
 {{ toYaml (fromYaml .Values.addons.metallb.values) | indent 4 }}
   {{- end }}
   defaultNamespace: "metallb-system"
-  targets:
-  - clusterName: {{ .Values.cluster.name }}
----
-{{- end }}
-{{- end }}
-{{- if .Values.addons.kubevirt }}
-{{- if .Values.addons.kubevirt.enabled }}
-apiVersion: management.cattle.io/v3
-kind: ManagedChart
-metadata:
-  name: kubevirt-{{ .Values.cluster.name }}
-  namespace: fleet-default
-spec:
-  chart: "kubevirt"
-  repoName: "extra-rancher-repo"
-  releaseName: "kubevirt"
-  version: 1.3.1
-  defaultNamespace: "kubevirt"
-  targets:
-  - clusterName: {{ .Values.cluster.name }}
----
-{{- end }}
-{{- end }}
-{{- if .Values.addons.openebs }}
-{{- if .Values.addons.openebs.enabled }}
-apiVersion: management.cattle.io/v3
-kind: ManagedChart
-metadata:
-  name: openebs-{{ .Values.cluster.name }}
-  namespace: fleet-default
-spec:
-  chart: "openebs"
-  repoName: "extra-rancher-repo"
-  releaseName: "openebs"
-  version: 4.1.1
-  defaultNamespace: "openebs"
-  {{- if .Values.addons.openebs.values }}
-  values:
-{{ toYaml (fromYaml .Values.addons.openebs.values) | indent 4 }}
-  {{- end }}
-  targets:
-  - clusterName: {{ .Values.cluster.name }}
----
-{{- end }}
-{{- end }}
-{{- if .Values.addons.logging }}
-{{- if .Values.addons.logging.enabled }}
-apiVersion: management.cattle.io/v3
-kind: ManagedChart
-metadata:
-  name: rancher-logging-{{ .Values.cluster.name }}-crd
-  namespace: fleet-default
-spec:
-  chart: "rancher-logging-crd"
-  repoName: "whitecruiser-principal"
-  releaseName: "rancher-logging-crd"
-  version: 104.1.0+up4.8.0
-  defaultNamespace: "cattle-logging-system"
-  {{- if .Values.addons.logging.values }}
-  values:
-{{ toYaml (fromYaml .Values.addons.logging.values) | indent 4 }}
-  {{- end }}
-  targets:
-  - clusterName: {{ .Values.cluster.name }}
----
-{{- end }}
-{{- end }}
-{{- if .Values.addons.logging }}
-{{- if .Values.addons.logging.enabled }}
-apiVersion: management.cattle.io/v3
-kind: ManagedChart
-metadata:
-  name: rancher-logging-{{ .Values.cluster.name }}
-  namespace: fleet-default
-spec:
-  chart: "rancher-logging"
-  repoName: "whitecruiser-principal"
-  releaseName: "rancher-logging"
-  version: 104.1.0+up4.8.0
-  defaultNamespace: "cattle-logging-system"
-  {{- if .Values.addons.logging.values }}
-  values:
-{{ toYaml (fromYaml .Values.addons.logging.values) | indent 4 }}
-  {{- end }}
   targets:
   - clusterName: {{ .Values.cluster.name }}
 ---

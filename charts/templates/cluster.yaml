@@ -50,7 +50,7 @@ spec:
     additionalManifest:
       {{- toYaml . | nindent 6 }}
     {{- end }}
-    {{- if eq $.Values.cloudprovider "openstack" }}
+    {{- if eq $.Values.cloudprovider "custom" }}
     {{- with $.Values.cluster.config.chartValues }}
     chartValues:
       {{- toYaml . | nindent 6 }}
