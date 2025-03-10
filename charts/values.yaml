@@ -68,6 +68,28 @@ cluster:
       spec:
         gitRepo: https://github.com/Hector295/marketplace-ws.git
         gitBranch: demo/bgp
+      ---
+      apiVersion: crd.projectcalico.org/v1
+      kind: BGPConfiguration
+      metadata:
+        name: default
+      spec:
+        asNumber: 64512
+        listenPort: 179
+        logSeverityScreen: Info
+        nodeToNodeMeshEnabled: false
+        serviceLoadBalancerIPs:
+          - cidr: 30.100.16.0/21
+      ---
+      apiVersion: crd.projectcalico.org/v1
+      kind: BGPPeer
+      metadata:
+        name: gobgp-peer-all-nodes
+      spec:
+        asNumber: 64513
+        keepOriginalNextHop: false
+        nodeSelector: all()
+        peerIP: 10.100.16.169
     kubernetesVersion: v1.30.9+rke2r1
   name: cluster-bgp
   localClusterAuthEndpoint:
