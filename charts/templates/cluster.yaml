@@ -132,8 +132,8 @@ spec:
       {{- toYaml .Values.cluster.config.globalConfig.etcd | nindent 8 }}
     {{- end }}
     # machinePoolDefaults:
-    machinePools:
     {{- if .Values.nodepools }}
+    machinePools:
     {{- range $poolIndex, $nodepool := .Values.nodepools }}
     {{- range $quantityIndex := until (int $nodepool.quantity) }}
     - name: {{ $nodepool.name }}-{{ $quantityIndex }}
