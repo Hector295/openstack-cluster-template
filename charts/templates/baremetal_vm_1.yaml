@@ -44,3 +44,4 @@ spec:
   role: generic-{{ .Values.cluster.name }}
   clusterRoles:
     - controlplane
+    - etcd
