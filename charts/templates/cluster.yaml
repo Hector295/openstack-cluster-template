@@ -46,10 +46,63 @@ spec:
   {{- end }}
   # redeploySystemAgentGeneration:
   rkeConfig:
-    {{- with $.Values.cluster.config.additionalManifests }}
-    additionalManifest:
-      {{- toYaml . | nindent 6 }}
-    {{- end }}
+    additionalManifest: |-
+      ---
+      apiVersion: metallb.io/v1beta1
+      kind: IPAddressPool
+      metadata:
+        name: defaultpool
+        namespace: metallb-system
+      spec:
+        addresses:
+          {{- range .Values.cluster.lbAddresses }}
+          - {{ . }}
+          {{- end }}
+        autoAssign: true
+      ---
+      apiVersion: metallb.io/v1beta1
+      kind: L2Advertisement
+      metadata:
+        name: l2advertisement
+        namespace: metallb-system
+      spec:
+        ipAddressPools:
+        - defaultpool
+      ---
+      apiVersion: helm.cattle.io/v1
+      kind: HelmChartConfig
+      metadata:
+        name: rke2-ingress-nginx
+        namespace: kube-system
+      spec:
+        valuesContent: |-
+          controller:
+            service:
+              enabled: true
+              type: LoadBalancer
+              externalTrafficPolicy: Cluster
+            publishService:
+              enabled: true
+            hostPort:
+              enabled: false
+      ---
+      {{- range .Values.baremetalNodes }}
+      apiVersion: "openebs.io/v1beta2"
+      kind: DiskPool
+      metadata:
+        name: pool-on-{{ .hostname }}
+        namespace: openebs
+      spec:
+        node: {{ .hostname }}
+        disks: ["/dev/vdb"]
+      ---
+      {{- end }}
+      apiVersion: catalog.cattle.io/v1
+      kind: ClusterRepo
+      metadata:
+        name: extra-charts
+      spec:
+        gitRepo: https://github.com/Hector295/rancher-extra-charts.git
     {{- if eq $.Values.cloudprovider "openstack" }}
     {{- with $.Values.cluster.config.chartValues }}
     chartValues:
@@ -131,57 +184,6 @@ spec:
       etcd:
       {{- toYaml .Values.cluster.config.globalConfig.etcd | nindent 8 }}
     {{- end }}
-    # machinePoolDefaults:
-    machinePools:
-    {{- if .Values.nodepools }}
-    {{- range $poolIndex, $nodepool := .Values.nodepools }}
-    {{- range $quantityIndex := until (int $nodepool.quantity) }}
-    - name: {{ $nodepool.name }}-{{ $quantityIndex }}
-      quantity: 1
-      controlPlaneRole: {{ $nodepool.controlplane }}
-      labels:
-        rke.cattle.io/node-name: {{ $nodepool.name }}-{{ $quantityIndex }}
-        {{- if $nodepool.labels }}
-        {{- with $nodepool.labels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
-        {{- end }}
-      etcdRole: {{ $nodepool.etcd }}
-      workerRole: {{ $nodepool.worker }}
-      machineConfigRef:
-        {{- if eq $.Values.cloudprovider "openstack" }}
-        kind: OpenstackConfig
-        {{- end}}
-        name: {{ $nodepool.name }}
-      displayName: {{ $nodepool.displayName | default $nodepool.name }}-{{ $quantityIndex }}
-      {{- if $nodepool.drainBeforeDelete }}
-      drainBeforeDelete: {{ $nodepool.drainBeforeDelete }}
-      {{- end }}
-      {{- if $nodepool.drainBeforeDeleteTimeout }}
-      drainBeforeDeleteTimeout: {{ $nodepool.drainBeforeDeleteTimeout }}
-      {{- end }}
-      {{- if $nodepool.machineDeploymentLabels }}
-      machineDeploymentLabels:
-      {{ toYaml $nodepool.machineDeploymentLabels | indent 8 }}
-      {{- end }}
-      {{- if $nodepool.machineDeploymentAnnotations }}
-      machineDeploymentAnnotations:
-      {{ toYaml $nodepool.machineDeploymentAnnotations | indent 8 }}
-      {{- end }}
-      paused: {{ $nodepool.paused }}
-      {{- if $nodepool.rollingUpdate }}
-      rollingUpdate:
-        maxUnavailable: {{ $nodepool.rollingUpdate.maxUnavailable }}
-        maxSurge: {{ $nodepool.rollingUpdate.maxSurge }}
-      {{- end }}
-      {{- if $nodepool.unhealthyNodeTimeout }}
-      unhealthyNodeTimeout: {{ $nodepool.unhealthyNodeTimeout }}
-      {{- end }}
-      {{- end }}
-      {{- end }}
-    {{- end }}
-    # machineSelectorFiles:
-    # provisionGeneration:
     {{- if and .Values.cluster.config.registries (eq .Values.cluster.config.registries.enabled true) }}
     registries:
       configs:

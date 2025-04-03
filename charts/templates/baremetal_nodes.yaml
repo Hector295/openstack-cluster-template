@@ -1,0 +1,53 @@
+{{- range .Values.baremetalNodes }}
+apiVersion: baremetal.whitestack.com/v1
+kind: BaremetalServer
+metadata:
+  name: {{ .hostname }}
+  annotations:
+    skip-config-applier: "true"
+    skip-diff-checker: "true"
+spec:
+  clusterKind: WhiteCruiser
+  rancherAgentParameters: "--label openebs.io/engine=mayastor"
+  serverSelector: whitecruiser-hector-{{ $.Values.cluster.name }}
+  hostname: {{ .hostname }}
+  softwareManagement:
+    address: {{ .swMgmtAddress }}
+    {{- $secretName := .swMgmtCredentialsSecret }}
+    {{- $secret := lookup "v1" "Secret" $.Release.Namespace $secretName }}
+    user: {{ $secret.data.username | b64dec | quote }}
+    password: {{ $secret.data.password | b64dec | quote }}
+  hardwareManagement:
+    type: {{ .bmcProvider }}
+    address: {{ .bmcAddress }}
+    {{- $secretName := .bmcCredentialsSecret }}
+    {{- $secret := lookup "v1" "Secret" $.Release.Namespace $secretName }}
+    user: {{ $secret.data.username | b64dec | quote }}
+    password: {{ $secret.data.password | b64dec | quote }}
+  rawNetplan: 
+    network:
+      ethernets:
+        {{ .primaryInterface.name }}:
+          match:
+            macaddress: b4:7a:f1:2d:0a:78
+            name: eno1*
+          dhcp4: {{ .primaryInterface.dhcpv4 }}
+          addresses:
+            - {{ .primaryInterface.address }}
+{{- if .primaryInterface.defaultRoute }}
+          routes:
+          - to: default
+            via: 10.100.2.1
+{{- end }}
+          nameservers:
+            addresses:
+              - 8.8.8.8
+              - 4.4.4.4
+      version: 2
+  role: generic-{{ $.Values.cluster.name }}
+  clusterRoles:
+  {{- range .roles }}
+    - {{ . }}
+  {{- end }}
+---
+{{- end }}
