@@ -3,6 +3,6 @@ kind: WhiteCruiser
 metadata:
   name: whitecruiser-hector-{{ .Values.cluster.name }}
 spec:
-  rancherServerURL: https://whitecruiser.10.100.63.94.nip.io
-  rancherApiKey: token-ntkkp:84htsthztdvzn8rmrgznw8cm6cbvdwddtpsbhzbnjhn27n2656vmwx
+  rancherServerURL: https://whitecruiser.10.100.18.40.nip.io
+  rancherApiKey: token-756z5:4szblwz6xjq2wrgwzjrzntk69bq5x5sqj4mpxs6wqvrxt6h656pgzs
   rancherClusterName: {{ .Values.cluster.name }}

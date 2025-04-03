@@ -12,15 +12,6 @@ questions:
   label: "cloudCredential Name"
   type: cloudcredential
   group: "General"
-- variable: cloudprovider
-  default: custom
-  description: "Specify Infrastructure provider for underlying nodes"
-  label: "Infrastructure Provider"
-  type: enum
-  required: true
-  options:
-  - openstack
-  group: "General"
 - variable: cluster.config.kubernetesVersion
   default: v1.30.4+rke2r1
   description: "Specify Kubernetes version"
@@ -33,12 +24,6 @@ questions:
   - v1.28.13+rke2r1
   - v1.27.16+rke2r2
   group: "General"
-- variable: cluster.config.additionalManifests
-  default:
-  label: "Additional Manifests"
-  description: "Additional Kubernetes Manifest YAML to be applied to the cluster on startup."
-  group: "General"
-  type: multiline
 - variable: cluster.localClusterAuthEndpoint.enabled
   default: false
   label: "Local Auth endpoint"
@@ -73,12 +58,6 @@ questions:
     description: "Choose chart version of monitoring. If empty latest version will be installed"
     type: string
     group: "Monitoring"
-  - variable: addons.monitoring.values
-    default:
-    label: "Monitoring Values"
-    description: "Custom monitoring chart values"
-    type: multiline
-    group: "Monitoring"
 - variable: addons.metallb.enabled
   default: false
   label: 'Enable MetalLB'
@@ -93,12 +72,6 @@ questions:
       description: 'Only version 0.14.5 is available'
       type: string
       read_only: true
-      group: 'MetalLB'
-    - variable: addons.metallb.values
-      default:
-      label: 'Metallb Values'
-      description: 'Custom metallb chart values'
-      type: multiline
       group: 'MetalLB'
 - variable: addons.openebs.enabled
   default: false
@@ -115,12 +88,6 @@ questions:
       type: string
       read_only: true
       group: 'OpenEBS'
-    - variable: addons.openebs.values
-      default:
-      label: 'OpenEBS Values'
-      description: 'Custom openebs chart values'
-      type: multiline
-      group: 'OpenEBS'
 - variable: addons.logging.enabled
   default: false
   label: 'Enable Rancher Logging'
@@ -128,157 +95,9 @@ questions:
   type: boolean
   group: 'Logging'
   show_subquestion_if: true
-  subquestions:
-    - variable: addons.logging.values
-      default:
-      label: 'Rancher Logging Values'
-      description: 'Custom logging chart values'
-      type: multiline
-      group: 'Logging'
 - variable: addons.kubevirt.enabled
   default: false
   label: 'Enable KubeVirt'
   description: 'Enable KubeVirt'
   type: boolean
   group: 'KubeVirt'
-- variable: nodepools.0.name
-  default:
-  description: "Specify nodepool name"
-  type: string
-  label: "Nodepool name"
-  required: true
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.quantity
-  default: 1
-  description: "Specify node count"
-  type: int
-  required: true
-  show_if: cloudprovider=openstack
-  label: "Node count"
-  group: "Nodepools"
-- variable: nodepools.0.etcd
-  default: true
-  label: etcd
-  type: boolean
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.worker
-  default: true
-  label: worker
-  type: boolean
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.controlplane
-  label: controlplane
-  default: true
-  type: boolean
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-# openstack
-- variable: nodepools.0.authUrl
-  label: "Openstack IP/hostname"
-  default: ""
-  type: hostname
-  description: "Openstack IP/hostname for Openstack"
-  required: true
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.domainName
-  label: "Openstack Domain Name"
-  default: "Default"
-  type: string
-  description: "Openstack Domain Name for virtual machine"
-  required: true
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.flavorName
-  label: "Openstack Flavor name"
-  default: ""
-  type: string
-  description: "Openstack Flavor name for virtual machine"
-  required: true
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.imageName
-  label: "Image name"
-  default: ""
-  type: string
-  description: "Image name for VM"
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.keypairName
-  label: "Keypair name"
-  default: ""
-  type: string
-  description: "Keypair name for VM"
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.netName
-  label: "Network"
-  default: ""
-  type: string
-  description: "Networks where the virtual machine will be attached"
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.privateKeyFile
-  label: "Private key file"
-  default: ""
-  type: string
-  description: "Content of Private key"
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.sshPort
-  label: "SSH Port"
-  default: "22"
-  type: string
-  description: "You can specify the ssh port"
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.sshUser
-  label: "SSH User"
-  default: ubuntu
-  type: hostname
-  description: "You can specify the ssh user"
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.secGroups
-  label: "Security groups"
-  default: ""
-  type: string
-  description: "Security groups"
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.region
-  label: "Region"
-  default: "RegionOne"
-  type: string
-  description: "Openstack Region"
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.tenantName
-  label: "Tenant name"
-  default: ""
-  type: string
-  description: "Openstack Tenant"
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.username
-  label: "User name"
-  default: ""
-  type: string
-  description: "Openstack User name"
-  show_if: cloudprovider=openstack
-  group: "Nodepools"
-- variable: nodepools.0.configDrive
-  default: false
-  label: "Config drive"
-  description: "Enables the OpenStack config drive for the instance"
-  group: "Nodepools"
-  type: boolean
-- variable: nodepools.0.userDataFile
-  default: ""
-  label: "userDataFile"
-  description: "File contents for userDataFile"
-  group: "Nodepools"
-  type: string
