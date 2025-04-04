@@ -103,6 +103,6 @@ questions:
   group: 'KubeVirt'
 - variable: listadoObjetos
   label: "Mi Lista de Objetos"
-  type: listofstrings
+  type: array
   required: false
   description: "Ingresa tus objetos en formato YAML (respeta la indentación)"
