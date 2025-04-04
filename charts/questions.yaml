@@ -101,41 +101,16 @@ questions:
   description: 'Enable KubeVirt'
   type: boolean
   group: 'KubeVirt'
-- variable: cantidadObjetos
-  label: "Número de objetos"
-  type: int
-  min: 0
-  max: 10
-  default: 1
-  required: true
-  description: "Especifica cuántos objetos quieres configurar"
-  group: "Configuración de objetos"
-
-# Luego crea preguntas repetibles basadas en ese número
-- variable: "objeto[0].nombre"
-  label: "Nombre del objeto 1"
-  type: string
-  required: true
-  show_if: "cantidadObjetos>=1"
-  group: "Configuración de objetos"
-- variable: "objeto[0].valor"
-  label: "Valor del objeto 1"
-  type: string
-  required: true
-  show_if: "cantidadObjetos>=1"
-  group: "Configuración de objetos"
-- variable: "objeto[0].habilitado"
-  label: "Habilitar objeto 1"
-  type: boolean
-  default: true
-  show_if: "cantidadObjetos>=1"
-  group: "Configuración de objetos"
-
-# Y repite para cada objeto posible
-- variable: "objeto[1].nombre"
-  label: "Nombre del objeto 2"
-  type: string
-  required: true
-  show_if: "cantidadObjetos>=2"
-  group: "Configuración de objetos"
-# ... y así sucesivamente
+- variable: listadoObjetos
+  label: "Mi Lista de Objetos (formato YAML)"
+  type: multiline
+  required: false
+  default: |
+    # Ejemplo:
+    # - nombre: objeto1
+    #   valor: valor1
+    #   habilitado: true
+    # - nombre: objeto2
+    #   valor: valor2
+    #   habilitado: false
+  description: "Ingresa tus objetos en formato YAML (respeta la indentación)"
