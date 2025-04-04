@@ -105,12 +105,4 @@ questions:
   label: "Mi Lista de Objetos (formato YAML)"
   type: []string
   required: false
-  default: |
-    # Ejemplo:
-    # - nombre: objeto1
-    #   valor: valor1
-    #   habilitado: true
-    # - nombre: objeto2
-    #   valor: valor2
-    #   habilitado: false
   description: "Ingresa tus objetos en formato YAML (respeta la indentación)"
