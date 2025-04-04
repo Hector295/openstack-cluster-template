@@ -101,21 +101,23 @@ questions:
   description: 'Enable KubeVirt'
   type: boolean
   group: 'KubeVirt'
-- variable: miLista
+- variable: objetosConfig
   label: "Mi Lista de Objetos"
   type: list
-  required: true
+  default: []
   description: "Una lista de objetos configurables"
-  subquestions:
-    - variable: nombre
-      label: "Nombre"
-      type: string
-      required: true
-    - variable: valor
-      label: "Valor"
-      type: string
-      required: true
-    - variable: habilitado
-      label: "Habilitado"
-      type: boolean
-      default: true
+  schema:
+    type: map
+    fields:
+      - variable: nombre
+        label: "Nombre"
+        type: string
+        required: true
+      - variable: valor
+        label: "Valor"
+        type: string
+        required: true
+      - variable: habilitado
+        label: "Habilitado"
+        type: boolean
+        default: true
