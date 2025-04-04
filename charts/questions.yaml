@@ -103,7 +103,7 @@ questions:
   group: 'KubeVirt'
 - variable: miLista
   label: "Mi Lista de Objetos"
-  type: array
+  type: list
   required: true
   description: "Una lista de objetos configurables"
   subquestions:
