@@ -101,19 +101,14 @@ questions:
   description: 'Enable KubeVirt'
   type: boolean
   group: 'KubeVirt'
-- variable: myList  # Nombre de la variable en values.yaml
-  type: array       # Tipo: lista
-  label: "Lista de Objetos"
-  description: "Lista de objetos con nombre y valor"
-  items:            # Define cada elemento de la lista
-    type: group     # Cada elemento es un grupo de campos
-    questions:
-      - variable: name  # Campo 1 del objeto
+- variable: nodeConfigs
+  type: array
+  label: "Configuraciones de nodos"
+  items:
+    type: object
+    properties:
+      name:
         type: string
-        label: "Nombre"
-        description: "Nombre del elemento"
-      - variable: value # Campo 2 del objeto
-        type: int
-        label: "Valor"
-        description: "Valor numérico del elemento"
-  default: []
+      role:
+        type: string
+  is_array: true
