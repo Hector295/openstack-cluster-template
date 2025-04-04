@@ -101,3 +101,18 @@ questions:
   description: 'Enable KubeVirt'
   type: boolean
   group: 'KubeVirt'
+- variable: serves
+  type: array
+  label: "Lista de servers"
+  description: "Define una lista de nombres."
+  subquestions:
+    - variable: name
+      type: string
+      label: "Nombre"
+      description: "nombre de server"
+      required: true
+    - variable: ip
+      type: string
+      label: "IP"
+      description: "ip de server"
+      required: true
