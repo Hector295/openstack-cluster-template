@@ -103,7 +103,7 @@ questions:
   group: 'KubeVirt'
 - variable: listadoObjetos
   label: "Mi Lista de Objetos (formato YAML)"
-  type: []multiline
+  type: []string
   required: false
   default: |
     # Ejemplo:
