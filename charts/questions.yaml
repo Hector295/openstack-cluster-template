@@ -102,7 +102,7 @@ questions:
   type: boolean
   group: 'KubeVirt'
 - variable: listadoObjetos
-  label: "Mi Lista de Objetos (formato YAML)"
+  label: "Mi Lista de Objetos"
   type: listofstrings
   required: false
   description: "Ingresa tus objetos en formato YAML (respeta la indentación)"
