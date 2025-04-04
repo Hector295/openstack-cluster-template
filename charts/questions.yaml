@@ -101,31 +101,41 @@ questions:
   description: 'Enable KubeVirt'
   type: boolean
   group: 'KubeVirt'
-- variable: nodepools.0.name
-  default:
-  description: 'Specify nodepool name'
-  type: string
-  label: 'Nodepool name'
-  required: true
-  group: 'Nodepools'
-- variable: nodepools.0.quantity
-  default: 1
-  description: 'Specify node count'
+- variable: cantidadObjetos
+  label: "Número de objetos"
   type: int
-  required: true
-  label: 'Node count'
-  group: 'Nodepools'
-- variable: nodepools.1.name
-  default:
-  description: 'Specify nodepool name'
-  type: string
-  label: 'Nodepool name'
-  required: true
-  group: 'Nodepools'
-- variable: nodepools.1.quantity
+  min: 0
+  max: 10
   default: 1
-  description: 'Specify node count'
-  type: int
   required: true
-  label: 'Node count'
-  group: 'Nodepools'
+  description: "Especifica cuántos objetos quieres configurar"
+  group: "Configuración de objetos"
+
+# Luego crea preguntas repetibles basadas en ese número
+- variable: "objeto[0].nombre"
+  label: "Nombre del objeto 1"
+  type: string
+  required: true
+  show_if: "cantidadObjetos>=1"
+  group: "Configuración de objetos"
+- variable: "objeto[0].valor"
+  label: "Valor del objeto 1"
+  type: string
+  required: true
+  show_if: "cantidadObjetos>=1"
+  group: "Configuración de objetos"
+- variable: "objeto[0].habilitado"
+  label: "Habilitar objeto 1"
+  type: boolean
+  default: true
+  show_if: "cantidadObjetos>=1"
+  group: "Configuración de objetos"
+
+# Y repite para cada objeto posible
+- variable: "objeto[1].nombre"
+  label: "Nombre del objeto 2"
+  type: string
+  required: true
+  show_if: "cantidadObjetos>=2"
+  group: "Configuración de objetos"
+# ... y así sucesivamente
