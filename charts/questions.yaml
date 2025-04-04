@@ -102,13 +102,6 @@ questions:
   type: boolean
   group: 'KubeVirt'
 - variable: nodeConfigs
-  type: array
+  type: yaml
   label: "Configuraciones de nodos"
-  items:
-    type: object
-    properties:
-      name:
-        type: string
-      role:
-        type: string
-  is_array: true
+  description: 'Enable KubeVirt'
