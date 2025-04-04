@@ -115,3 +115,17 @@ questions:
   required: true
   label: 'Node count'
   group: 'Nodepools'
+- variable: nodepools.1.name
+  default:
+  description: 'Specify nodepool name'
+  type: string
+  label: 'Nodepool name'
+  required: true
+  group: 'Nodepools'
+- variable: nodepools.1.quantity
+  default: 1
+  description: 'Specify node count'
+  type: int
+  required: true
+  label: 'Node count'
+  group: 'Nodepools'
