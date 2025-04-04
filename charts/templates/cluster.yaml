@@ -103,11 +103,16 @@ spec:
         name: extra-charts
       spec:
         gitRepo: https://github.com/Hector295/rancher-extra-charts.git
-    {{- if eq $.Values.cloudprovider "openstack" }}
+      ---
+      apiVersion: catalog.cattle.io/v1
+      kind: ClusterRepo
+      metadata:
+        name: oai-charts
+      spec:
+        gitRepo: https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed.git
     {{- with $.Values.cluster.config.chartValues }}
     chartValues:
       {{- toYaml . | nindent 6 }}
-    {{- end }}
     {{- end }}
     # etcd:
     # etcdSnapshotCreate:

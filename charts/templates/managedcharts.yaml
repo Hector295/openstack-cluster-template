@@ -26,44 +26,44 @@ spec:
   releaseName: "rancher-monitoring"
   version: {{ .Values.addons.monitoring.version }}
   values:
-    alertmanager:
-      enabled: false
-    prometheus:
-      thanosService:
-        enabled: true
-      prometheusSpec:
-        tolerations:
-          - key: "node-role.kubernetes.io/control-plane"
-            operator: "Exists"
-            effect: "NoSchedule"
-        externalLabels:
-          k8s_cluster: cluster-rke2
-        thanos:
-          objstoreConfig:
-            config:
-              access_key: {{ .Values.addons.monitoring.objectStorage.accessKey }}
-              bucket: {{ .Values.addons.monitoring.objectStorage.bucket }}
-              endpoint: {{ .Values.addons.monitoring.objectStorage.endpoint }}
-              insecure: true
-              secret_key: {{ .Values.addons.monitoring.objectStorage.secretKey }}
-            type: S3
-      thanosIngress:
-        annotations:
-          nginx.ingress.kubernetes.io/backend-protocol: GRPC
-          nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
-          nginx.ingress.kubernetes.io/grpc-backend: 'true'
-          nginx.ingress.kubernetes.io/protocol: h2c
-          nginx.ingress.kubernetes.io/proxy-read-timeout: '160'
-        enabled: true
-        hosts:
-          - {{ .Values.addons.monitoring.thanosIngress.host }}
-        labels: {}
-        nodePort: 30901
-        paths:
-          - /
-        servicePort: 10901
-        tls: null
-        pathType: ImplementationSpecific
+alertmanager:
+  enabled: false
+prometheus:
+  thanosService:
+    enabled: true
+  prometheusSpec:
+    tolerations:
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"
+    externalLabels:
+      k8s_cluster: {{ .Values.cluster.name }}
+    thanos:
+      objstoreConfig:
+        config:
+          access_key: {{ .Values.addons.monitoring.objectStorage.accessKey }}
+          bucket: {{ .Values.addons.monitoring.objectStorage.bucket }}
+          endpoint: {{ .Values.addons.monitoring.objectStorage.endpoint }}
+          insecure: true
+          secret_key: {{ .Values.addons.monitoring.objectStorage.secretKey }}
+        type: S3
+  thanosIngress:
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: GRPC
+      nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+      nginx.ingress.kubernetes.io/grpc-backend: 'true'
+      nginx.ingress.kubernetes.io/protocol: h2c
+      nginx.ingress.kubernetes.io/proxy-read-timeout: '160'
+    enabled: true
+    hosts:
+      - {{ .Values.addons.monitoring.thanosIngress.host }}
+    labels: {}
+    nodePort: 30901
+    paths:
+      - /
+    servicePort: 10901
+    tls: null
+    pathType: ImplementationSpecific
   defaultNamespace: "cattle-monitoring-system"
   targets:
   - clusterName: {{ .Values.cluster.name }}
@@ -123,7 +123,7 @@ spec:
   version: 0.5.0
   defaultNamespace: "kubevirt"
   targets:
-    - clusterName: { { .Values.cluster.name } }
+    - clusterName: {{ .Values.cluster.name }}
 ---
 apiVersion: management.cattle.io/v3
 kind: ManagedChart
@@ -136,6 +136,11 @@ spec:
   releaseName: "kubevirt"
   version: 0.5.0
   defaultNamespace: "kubevirt"
+  values:
+    kubevirt:
+      configuration:
+        developerConfiguration:
+          useEmulation: {{ .Values.addons.kubevirt.emulation }}
   targets:
   - clusterName: {{ .Values.cluster.name }}
 ---
@@ -151,7 +156,7 @@ spec:
   version: 1.2.1
   defaultNamespace: "cattle-ui-plugin-system"
   targets:
-    - clusterName: { { .Values.cluster.name } }
+    - clusterName: {{ .Values.cluster.name }}
 ---
 {{- end }}
 {{- end }}
@@ -169,6 +174,12 @@ spec:
   version: 4.1.1
   defaultNamespace: "openebs"
   values:
+    engines:
+        zfs:
+          enabled: false
+    zfs-localpv:
+        zfsLocalPv:
+          enabled: false
     openebs-crds:
       csi:
         volumeSnapshots:

@@ -64,15 +64,6 @@ questions:
   description: 'Enable MetalLB'
   type: boolean
   group: 'MetalLB'
-  show_subquestion_if: true
-  subquestions:
-    - variable: addons.metallb.version
-      default: "0.14.5"
-      label: 'Metallb Version'
-      description: 'Only version 0.14.5 is available'
-      type: string
-      read_only: true
-      group: 'MetalLB'
 - variable: addons.openebs.enabled
   default: false
   label: 'Enable OpenEBS'

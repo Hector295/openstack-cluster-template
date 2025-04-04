@@ -15,6 +15,7 @@ baremetalNodes:
 addons:
   kubevirt:
     enabled: true
+    emulation: true
   logging:
     enabled: true
     server: 
@@ -25,8 +26,8 @@ addons:
   metallb:
     enabled: true
   monitoring:
-    enabled: true
-    version: 104.1.0+up57.0.3
+    enabled: false
+    version: 105.1.0+up61.3.2
     objectStorage:
       accessKey: <changeme>
       bucket: <changeme>
@@ -39,14 +40,17 @@ addons:
     version: 4.1.1
 cluster:
   lbAddresses:
-    - 10.100.18.80/32
+    - 10.100.20.137/32
   config:
     chartValues:
       rke2-calico: {}
+      rke2-multus:
+        rke2-whereabouts:
+          enabled: true
     enableNetworkPolicy: false
     globalConfig:
       cloud_provider_name: ''
-      cni: calico
+      cni: multus,calico
       disable_cloud_controller: false
       disable_kube_proxy: false
       disable_scheduler: false
