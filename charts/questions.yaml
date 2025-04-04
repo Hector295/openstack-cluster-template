@@ -101,22 +101,17 @@ questions:
   description: 'Enable KubeVirt'
   type: boolean
   group: 'KubeVirt'
-- variable: listaObjetos
-  label: Mi Lista de Objetos
-  description: Una lista de objetos configurables
-  type: list
-  group: "Configuración"
-  struct:
-    fields:
-      nombre:
-        label: Nombre
-        type: string
-        required: true
-      valor:
-        label: Valor
-        type: string
-        required: true
-      habilitado:
-        label: Habilitado
-        type: boolean
-        default: true
+- variable: nodepools.0.name
+  default:
+  description: 'Specify nodepool name'
+  type: string
+  label: 'Nodepool name'
+  required: true
+  group: 'Nodepools'
+- variable: nodepools.0.quantity
+  default: 1
+  description: 'Specify node count'
+  type: int
+  required: true
+  label: 'Node count'
+  group: 'Nodepools'
