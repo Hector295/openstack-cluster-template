@@ -101,8 +101,19 @@ questions:
   description: 'Enable KubeVirt'
   type: boolean
   group: 'KubeVirt'
-- variable: listadoObjetos
-  label: "Mi Lista de Objetos"
-  type: array
-  required: false
-  description: "Ingresa tus objetos en formato YAML (respeta la indentación)"
+- variable: myList  # Nombre de la variable en values.yaml
+  type: array       # Tipo: lista
+  label: "Lista de Objetos"
+  description: "Lista de objetos con nombre y valor"
+  items:            # Define cada elemento de la lista
+    type: group     # Cada elemento es un grupo de campos
+    questions:
+      - variable: name  # Campo 1 del objeto
+        type: string
+        label: "Nombre"
+        description: "Nombre del elemento"
+      - variable: value # Campo 2 del objeto
+        type: int
+        label: "Valor"
+        description: "Valor numérico del elemento"
+  default: []
