@@ -102,6 +102,6 @@ questions:
   type: boolean
   group: 'KubeVirt'
 - variable: nodeConfigs
-  type: yaml
+  type: questionMap
   label: "Configuraciones de nodos"
   description: 'Enable KubeVirt'
