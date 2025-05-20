@@ -12,49 +12,62 @@ metadata:
   name: {{ .Values.cluster.name }}
   namespace: fleet-default
 spec:
-  {{- if .Values.cluster.config.agentEnvs }}
+  {{- if .Values.cluster.rke2Config.agentEnvVars }}
   agentEnvVars:
-  {{ toYaml .Values.cluster.config.agentEnvs | indent 4 }}
+  {{ toYaml .Values.cluster.rke2Config.agentEnvVars | indent 4 }}
   {{- end }}
-  {{- if .Values.cloudCredentialSecretName }}
-  cloudCredentialSecretName: {{ .Values.cloudCredentialSecretName }}
+  {{- if .Values.cluster.cloudCredentialSecretName }}
+  cloudCredentialSecretName: {{ .Values.cluster.cloudCredentialSecretName }}
   {{- end }}
   # clusterAPIConfig:
   # clusterAgentDeploymentCustomization:
-  {{- if .Values.cluster.config.defaultClusterRoleForProjectMembers }}
-  defaultClusterRoleForProjectMembers: {{ .Values.cluster.config.defaultClusterRoleForProjectMembers }}
+  {{- if .Values.cluster.rke2Config.defaultClusterRoleForProjectMembers }}
+  defaultClusterRoleForProjectMembers: {{ .Values.cluster.rke2Config.defaultClusterRoleForProjectMembers }}
   {{- end }}
-  {{- if .Values.cluster.config.defaultPodSecurityAdmissionConfigurationTemplateName }}
-  defaultPodSecurityAdmissionConfigurationTemplateName: {{ .Values.cluster.config.defaultPodSecurityAdmissionConfigurationTemplateName }}
+  {{- if .Values.cluster.rke2Config.defaultPodSecurityAdmissionConfigurationTemplateName }}
+  defaultPodSecurityAdmissionConfigurationTemplateName: {{ .Values.cluster.rke2Config.defaultPodSecurityAdmissionConfigurationTemplateName }}
   {{- end }}
-  {{- if .Values.cluster.config.defaultPodSecurityPolicyTemplateName }}
-  defaultPodSecurityPolicyTemplateName: {{ .Values.cluster.config.defaultPodSecurityPolicyTemplateName }}
+  {{- if .Values.cluster.rke2Config.defaultPodSecurityPolicyTemplateName }}
+  defaultPodSecurityPolicyTemplateName: {{ .Values.cluster.rke2Config.defaultPodSecurityPolicyTemplateName }}
   {{- end }}
-  enableNetworkPolicy: {{ .Values.cluster.config.enableNetworkPolicy }}
+  enableNetworkPolicy: {{ .Values.cluster.rke2Config.enableNetworkPolicy }}
   # fleetAgentDeploymentCustomization:
-  {{- if .Values.cluster.config.kubernetesVersion }}
-  kubernetesVersion: {{ .Values.cluster.config.kubernetesVersion }}
+  {{- if .Values.cluster.kubernetesVersion }}
+  kubernetesVersion: {{ .Values.cluster.kubernetesVersion }}
   {{- end }}
-  {{- if eq .Values.cluster.config.localClusterAuthEndpoint.enabled true }}
-  localClusterAuthEndpoint:
-    enabled: {{ .Values.cluster.config.localClusterAuthEndpoint.enabled }}
-    fqdn: {{ .Values.cluster.config.localClusterAuthEndpoint.fqdn }}
-    caCerts: {{ .Values.cluster.config.localClusterAuthEndpoint.caCerts }}
-  {{- else }}
   localClusterAuthEndpoint:
     enabled: false
-  {{- end }}
   # redeploySystemAgentGeneration:
   rkeConfig:
-    {{- with $.Values.cluster.config.additionalManifests }}
+    {{- with $.Values.cluster.additionalManifests }}
     additionalManifest:
       {{- toYaml . | nindent 6 }}
     {{- end }}
-    {{- if eq $.Values.cloudprovider "openstack" }}
-    {{- with $.Values.cluster.config.chartValues }}
     chartValues:
+      rke2-calico:
+        installation:
+          calicoNetwork:
+          {{- if eq .Values.cniConfig.bgp true }}
+            bgp: Enabled
+          {{- end }}
+          {{- if not (hasKey .Values.cniConfig.additionalConfig "mtu") }}
+            mtu: {{ .Values.cniConfig.mtu | default 1440 }}
+          {{- end }}
+      {{- if not (hasKey .Values.cniConfig.additionalConfig "ipPools") }}
+            ipPools:
+              - cidr: {{ .Values.cniConfig.podCIDR }}
+                disableBGPExport: true
+                encapsulation: {{ .Values.cniConfig.tunnelProtocol | upper }}
+              {{- if eq .Values.cniConfig.masquerade true }}
+                natOutgoing: Enabled
+              {{- end }}
+                nodeSelector: all()
+      {{- end }}
+      {{- if .Values.cniConfig.additionalConfig }}
+        {{- toYaml .Values.cniConfig.additionalConfig | indent 12 }}
+      {{- end }}
+    {{- with $.Values.cluster.config.chartValues }}
       {{- toYaml . | nindent 6 }}
-    {{- end }}
     {{- end }}
     # etcd:
     # etcdSnapshotCreate:
@@ -62,9 +75,7 @@ spec:
     # infrastructureRef:
     {{- if .Values.cluster.config.globalConfig }}
     machineGlobalConfig:
-      {{- if .Values.cluster.config.globalConfig.cni }}
-      cni: {{ .Values.cluster.config.globalConfig.cni }}
-      {{- end }}
+      cni: calico
       {{- if .Values.cluster.config.globalConfig.disable }}
       disable: {{ .Values.cluster.config.globalConfig.disable | toRawJson }}
       {{- end }}
@@ -149,9 +160,7 @@ spec:
       etcdRole: {{ $nodepool.etcd }}
       workerRole: {{ $nodepool.worker }}
       machineConfigRef:
-        {{- if eq $.Values.cloudprovider "openstack" }}
         kind: OpenstackConfig
-        {{- end}}
         name: {{ $nodepool.name }}
       displayName: {{ $nodepool.displayName | default $nodepool.name }}-{{ $quantityIndex }}
       {{- if $nodepool.drainBeforeDelete }}

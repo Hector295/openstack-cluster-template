@@ -10,10 +10,7 @@ spec:
   repoName: "whitecruiser-principal"
   releaseName: "rancher-monitoring-crd"
   version: {{ .Values.addons.monitoring.version }}
-  {{- if .Values.addons.monitoring.values }}
   values:
-{{ toYaml (fromYaml .Values.addons.monitoring.values) | indent 4 }}
-  {{- end }}
   defaultNamespace: "cattle-monitoring-system"
   targets:
   - clusterName: {{ .Values.cluster.name }}
@@ -28,31 +25,66 @@ spec:
   repoName: "whitecruiser-principal"
   releaseName: "rancher-monitoring"
   version: {{ .Values.addons.monitoring.version }}
-  {{- if .Values.addons.monitoring.values }}
   values:
-{{ toYaml (fromYaml .Values.addons.monitoring.values) | indent 4 }}
-  {{- end }}
-  defaultNamespace: "cattle-monitoring-system"
-  targets:
-  - clusterName: {{ .Values.cluster.name }}
-  diff:
-    comparePatches:
-    - apiVersion: admissionregistration.k8s.io/v1beta1
-      kind: MutatingWebhookConfiguration
-      name: rancher-monitoring-admission
-      jsonPointers:
-      - /webhooks/0/failurePolicy
-    - apiVersion: admissionregistration.k8s.io/v1beta1
-      kind: ValidatingWebhookConfiguration
-      name: rancher-monitoring-admission
-      jsonPointers:
-      - /webhooks/0/failurePolicy
-    - apiVersion: monitoring.coreos.com/v1
-      kind: ServiceMonitor
-      name: rancher-monitoring-kubelet
-      namespace: kube-system
-      jsonPointers:
-      - /spec/endpoints
+    alertmanager:
+      enabled: false
+    prometheus:
+      thanosService:
+        enabled: true
+      prometheusSpec:
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
+        externalLabels:
+          k8s_cluster: {{ .Values.cluster.name }}
+        thanos:
+          objstoreConfig:
+            config:
+              access_key: {{ .Values.addons.monitoring.objectStorage.accessKey }}
+              bucket: {{ .Values.addons.monitoring.objectStorage.bucket }}
+              endpoint: {{ .Values.addons.monitoring.objectStorage.endpoint }}
+              insecure: true
+              secret_key: {{ .Values.addons.monitoring.objectStorage.secretKey }}
+            type: S3
+      thanosIngress:
+        annotations:
+          nginx.ingress.kubernetes.io/backend-protocol: GRPC
+          nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+          nginx.ingress.kubernetes.io/grpc-backend: 'true'
+          nginx.ingress.kubernetes.io/protocol: h2c
+          nginx.ingress.kubernetes.io/proxy-read-timeout: '160'
+        enabled: true
+        hosts:
+          - {{ .Values.addons.monitoring.thanosIngress.host }}
+        labels: {}
+        nodePort: 30901
+        paths:
+          - /
+        servicePort: 10901
+        tls: null
+        pathType: ImplementationSpecific
+      defaultNamespace: "cattle-monitoring-system"
+      targets:
+      - clusterName: {{ .Values.cluster.name }}
+      diff:
+        comparePatches:
+        - apiVersion: admissionregistration.k8s.io/v1beta1
+          kind: MutatingWebhookConfiguration
+          name: rancher-monitoring-admission
+          jsonPointers:
+          - /webhooks/0/failurePolicy
+        - apiVersion: admissionregistration.k8s.io/v1beta1
+          kind: ValidatingWebhookConfiguration
+          name: rancher-monitoring-admission
+          jsonPointers:
+          - /webhooks/0/failurePolicy
+        - apiVersion: monitoring.coreos.com/v1
+          kind: ServiceMonitor
+          name: rancher-monitoring-kubelet
+          namespace: kube-system
+          jsonPointers:
+          - /spec/endpoints
 ---
 {{- end }}
 {{- end }}
@@ -68,10 +100,9 @@ spec:
   repoName: "whitecruiser-apps"
   releaseName: "metallb"
   version: 0.14.5
-  {{- if .Values.addons.metallb.values }}
   values:
-{{ toYaml (fromYaml .Values.addons.metallb.values) | indent 4 }}
-  {{- end }}
+    speaker:
+      ignoreExcludeLB: true
   defaultNamespace: "metallb-system"
   targets:
   - clusterName: {{ .Values.cluster.name }}
@@ -83,16 +114,49 @@ spec:
 apiVersion: management.cattle.io/v3
 kind: ManagedChart
 metadata:
+  name: kubevirt-{{ .Values.cluster.name }}-cdi
+  namespace: fleet-default
+spec:
+  chart: "cdi"
+  repoName: "susegit"
+  releaseName: "cdi"
+  version: 0.5.0
+  defaultNamespace: "kubevirt"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+---
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
   name: kubevirt-{{ .Values.cluster.name }}
   namespace: fleet-default
 spec:
   chart: "kubevirt"
-  repoName: "extra-rancher-repo"
+  repoName: "susegit"
   releaseName: "kubevirt"
-  version: 1.3.1
+  version: 0.5.0
   defaultNamespace: "kubevirt"
+  values:
+    kubevirt:
+      configuration:
+        developerConfiguration:
+          useEmulation: {{ .Values.addons.kubevirt.emulation }}
   targets:
   - clusterName: {{ .Values.cluster.name }}
+---
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: kubevirt-{{ .Values.cluster.name }}-extension
+  namespace: fleet-default
+spec:
+  chart: "kubevirt-dashboard-extension"
+  repoName: "susegit"
+  releaseName: "kubevirt-dashboard-extension"
+  version: 1.2.1
+  defaultNamespace: "cattle-ui-plugin-system"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
 ---
 {{- end }}
 {{- end }}
@@ -109,10 +173,26 @@ spec:
   releaseName: "openebs"
   version: 4.1.1
   defaultNamespace: "openebs"
-  {{- if .Values.addons.openebs.values }}
   values:
-{{ toYaml (fromYaml .Values.addons.openebs.values) | indent 4 }}
-  {{- end }}
+    engines:
+        zfs:
+          enabled: false
+    zfs-localpv:
+        zfsLocalPv:
+          enabled: false
+    openebs-crds:
+      csi:
+        volumeSnapshots:
+          enabled: false
+    mayastor:
+      storageClass:
+        enabled: true
+        nameSuffix: multiple-replica
+        default: true
+        allowVolumeExpansion: true
+        parameters:
+          protocol: nvmf
+          repl: 3
   targets:
   - clusterName: {{ .Values.cluster.name }}
 ---
@@ -131,17 +211,10 @@ spec:
   releaseName: "rancher-logging-crd"
   version: 104.1.0+up4.8.0
   defaultNamespace: "cattle-logging-system"
-  {{- if .Values.addons.logging.values }}
   values:
-{{ toYaml (fromYaml .Values.addons.logging.values) | indent 4 }}
-  {{- end }}
   targets:
   - clusterName: {{ .Values.cluster.name }}
 ---
-{{- end }}
-{{- end }}
-{{- if .Values.addons.logging }}
-{{- if .Values.addons.logging.enabled }}
 apiVersion: management.cattle.io/v3
 kind: ManagedChart
 metadata:
@@ -153,10 +226,52 @@ spec:
   releaseName: "rancher-logging"
   version: 104.1.0+up4.8.0
   defaultNamespace: "cattle-logging-system"
-  {{- if .Values.addons.logging.values }}
   values:
-{{ toYaml (fromYaml .Values.addons.logging.values) | indent 4 }}
-  {{- end }}
+      rke2:
+        enabled: true
+      logging:
+        enableRecreateWorkloadOnImmutableFieldChange: true
+        enabled: true
+        clusterFlows:
+          - name: all-logs
+            spec:
+              filters:
+                - record_modifier:
+                    records:
+                      - cluster-name: cluster-rke2
+              globalOutputRefs:
+                - fluentd-forward
+              match:
+                - select: {}
+        fluentd:
+          bufferStorageVolume:
+            pvc:
+              spec:
+               accessModes:
+                 - ReadWriteOnce
+               resources:
+                 requests:
+                   storage: 5Gi
+        clusterOutputs:
+          - name: fluentd-forward
+            spec:
+              forward:
+                buffer:
+                  flush_interval: 10s
+                  retry_forever: false
+                  retry_max_interval: '30'
+                  type: file
+                compress: gzip
+                require_ack_response: false
+                servers:
+                  - host: {{ .Values.addons.logging.server.address }}
+                    port: {{ .Values.addons.logging.server.port }}
+                tls_insecure_mode: true
+      hostTailer:
+        enabled: true
+        fileTailers:
+          - name: syslog
+            path: /var/log/syslog
   targets:
   - clusterName: {{ .Values.cluster.name }}
 ---

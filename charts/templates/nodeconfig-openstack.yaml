@@ -1,4 +1,3 @@
-{{- if eq .Values.cloudprovider "openstack" }}
 {{- range $index, $nodepool := .Values.nodepools }}
 ---
 # OpenStack configuration (ref. openstackconfigs.rke-machine-config.cattle.io CRD)
@@ -83,4 +82,3 @@ volumeName: "{{ default "" $nodepool.volumeName }}"
 volumeSize: "{{ default "" $nodepool.volumeSize }}"
 volumeType: "{{ default "" $nodepool.volumeType }}"
 {{- end }}  # Fin del rango de nodepools
-{{- end }}  # Fin del if cloudprovider == openstack
